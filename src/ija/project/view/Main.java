@@ -1,4 +1,4 @@
-package ija.project;
+package ija.project.view;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -10,7 +10,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("hellofx.fxml"));
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Main.fxml"));
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();

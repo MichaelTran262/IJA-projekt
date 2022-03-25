@@ -35,10 +35,10 @@
         <jar destfile="${dest}/Main.jar" basedir="${build}">
             <manifest>
                 <attribute name="Main-Class"
-                           value="ija.project.Main" />
+                           value="ija.project.view.Main" />
             </manifest>
             <zipgroupfileset dir="lib" includes="**/*.jar"/>
-            <fileset file="data/hellofx.fxml"/>
+            <fileset file="data/Main.fxml"/>
         </jar>
     </target>
 
