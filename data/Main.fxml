@@ -4,34 +4,33 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane prefWidth="601.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/18" fx:controller="ija.project.controller.ClassController">
+<GridPane xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.project.controller.ClassController">
   <columnConstraints>
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="99.0" minWidth="10.0" prefWidth="68.0" />
-    <ColumnConstraints hgrow="SOMETIMES" maxWidth="99.0" minWidth="10.0" prefWidth="48.0" />
-    <ColumnConstraints hgrow="SOMETIMES" maxWidth="448.0" minWidth="10.0" prefWidth="368.0" />
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="195.0" minWidth="10.0" prefWidth="117.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="68.0" />
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="368.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="117.0" />
   </columnConstraints>
   <rowConstraints>
-    <RowConstraints maxHeight="75.0" minHeight="0.0" prefHeight="35.0" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="374.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="325.0" minHeight="0.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="303.0" minHeight="0.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="291.0" minHeight="10.0" prefHeight="34.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="261.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="261.0" minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="261.0" minHeight="10.0" prefHeight="24.0" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="261.0" minHeight="10.0" prefHeight="33.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="-Infinity" minHeight="0.0" prefHeight="35.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="-Infinity" minHeight="0.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="-Infinity" minHeight="0.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="34.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="33.0" vgrow="SOMETIMES" />
       <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
   </rowConstraints>
-   <children>
-      <Button mnemonicParsing="false" text="Sequence diagram" GridPane.columnIndex="3" GridPane.rowIndex="9"/> <!-- TODO Scene change-->
-      <Button mnemonicParsing="false" text="Save" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-      <Button mnemonicParsing="false" text="Load" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-      <Button mnemonicParsing="false" text="Select" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-      <Button mnemonicParsing="false" text="Add" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-      <ToggleButton mnemonicParsing="false" text="Connect" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-      <ToggleButton mnemonicParsing="false" text="Delete" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+   <children> <!-- TODO Scene change-->
+      <Button fx:id="saveButton" mnemonicParsing="false" text="Save" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <Button fx:id="loadButton" mnemonicParsing="false" text="Load" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+      <Button fx:id="addButton" mnemonicParsing="false" onAction="#addClass" text="Add" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+      <ToggleButton fx:id="connectButton" mnemonicParsing="false" onAction="#changeToConnect" text="Connect" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+      <ToggleButton fx:id="deleteButton" mnemonicParsing="false" onAction="#changeToDelete" text="Delete" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+      <ToggleButton fx:id="selectButton" mnemonicParsing="false" onAction="#changeToSelect" selected="true" text="Select" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+      <Pane fx:id="panel" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="6" GridPane.rowSpan="2147483647">
+      </Pane>
+      <Button mnemonicParsing="false" text="Sequence diagram" GridPane.columnIndex="2" GridPane.rowIndex="6" />
    </children>
 </GridPane>
