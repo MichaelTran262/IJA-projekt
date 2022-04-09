@@ -2,16 +2,24 @@ package ija.project.model;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class ClassBox extends Rectangle {
     private ClassDiagram diagram;
-    private List<Connection> spojeniStart;
-    private List<Connection> spojeniEnd;
+    private ArrayList<Connection> spojeniStart;
+    private ArrayList<Connection> spojeniEnd;
+    private Text classTitle;
+    private ArrayList<Text> attributes;
 
     public ClassBox(double i, double i1) {
         super(i,i1, Color.WHITE);
+        classTitle = new Text("Class Title");
+    }
+
+    public Text getClassTitle() {
+        return classTitle;
     }
 
     public void addStart(Connection newSpojeni){
@@ -21,8 +29,8 @@ public class ClassBox extends Rectangle {
         spojeniEnd.add(newSpojeni);
     }
     public void change(double x, double y){
-        this.setTranslateX(x);
-        this.setTranslateY(y);
+        //this.setTranslateX(x);
+        //this.setTranslateY(y);
         for (Connection connection:spojeniStart) {
             connection.setStartX(x);
             connection.setStartY(y);

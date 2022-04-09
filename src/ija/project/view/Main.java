@@ -14,7 +14,10 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException{
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Main.fxml"));
         primaryStage.setTitle("IJA");
-        primaryStage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        String css = this.getClass().getClassLoader().getResource("application.css").toExternalForm();
+        scene.getStylesheets().add(css);
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 

@@ -38,7 +38,11 @@
                            value="ija.project.view.Main" />
             </manifest>
             <zipgroupfileset dir="lib" includes="**/*.jar"/>
-            <fileset file="data/Main.fxml"/>
+            <fileset dir="data">
+                <include name="Main.fxml"/>
+                <include name="Box.fxml"/>
+                <include name="application.css"/>
+            </fileset>
         </jar>
     </target>
 

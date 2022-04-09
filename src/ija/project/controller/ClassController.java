@@ -15,8 +15,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
@@ -35,13 +36,11 @@ public class ClassController {
     private Scene scene;
     private Parent root;
     @FXML
-    private Pane panel;
+    private AnchorPane anchorPane;
     private List<ClassBox> seznam = new ArrayList<ClassBox>();
     private List<Line> connections = new ArrayList<Line>();
     private double x;
     private double y;
-    private double newx;
-    private double newy;
     private int number = 1;
     private int numberToDelete = 0;
     private ClassBox selected = null;
@@ -56,15 +55,18 @@ public class ClassController {
     }*/
 
     public void addClass(ActionEvent event){
-        ClassBox circle = new ClassBox(40,20);
-        circle.relocate(x+=20,y+=30);
-        circle.setId(Integer.toString(number++));
-        circle.setOnMouseClicked(event1 -> {classClick(event1);});
-        circle.setOnMousePressed(event1 -> {classPress(event1);});
-        circle.setOnMouseDragExited(event1 -> {classMove(event1);});
-        circle.setStyle("-fx-fill: white; -fx-stroke: black; -fx-stroke-width: 2;");
-        panel.getChildren().add(circle);
-        seznam.add(circle);
+        System.out.println("Calling addClass");
+        StackPane stp = new StackPane();
+        ClassBox rectangle = new ClassBox(40,80);
+        rectangle.relocate(x+=20,y+=30);
+        rectangle.setId(Integer.toString(number++));
+        rectangle.setOnMouseClicked(this::classClick);
+        //circle.setOnMousePressed(event1 -> {classPress(event1);});
+        rectangle.setOnMouseDragged(this::classMove);
+        rectangle.setStyle("-fx-fill: white; -fx-stroke: black; -fx-stroke-width: 2;");
+        //Class Name
+        anchorPane.getChildren().add(rectangle);
+        seznam.add(rectangle);
     }
     /*public void Delete(ActionEvent event){
         String retez = "#";
@@ -74,6 +76,7 @@ public class ClassController {
     }*/
     //Ovládání toggle tlačítka select
     public void changeToSelect(ActionEvent event){
+        System.out.println("Calling changeToSelect");
         selected = null;
         if(mouseMode == Mode.select){
             selectButton.setSelected(true);
@@ -84,6 +87,7 @@ public class ClassController {
     }
     //Ovládání toggle tlačítka delete
     public void changeToDelete(ActionEvent event){
+        System.out.println("Calling changeDelete");
         if(mouseMode == Mode.delete){
             mouseMode = Mode.select;
             deleteButton.setSelected(false);
@@ -97,6 +101,7 @@ public class ClassController {
     }
     //Ovládání toggle tlačítka connect
     public void changeToConnect(ActionEvent event){
+        System.out.println("Calling changeToConnect");
         if(mouseMode == Mode.connect){
             mouseMode = Mode.select;
             connectButton.setSelected(false);
@@ -110,11 +115,12 @@ public class ClassController {
     }
     //Ovládání objektu třídy při jednoduchém mouseClicku
     public void classClick(MouseEvent event){
+        System.out.println("Calling classClick");
         switch(mouseMode){
             case select:
                 break;
             case delete:
-                panel.getChildren().remove(event.getTarget());
+                anchorPane.getChildren().remove(event.getTarget());
                 seznam.remove(((ClassBox)event.getTarget()).getId());
                 break;
             case connect: if(selected == null) {
@@ -122,7 +128,7 @@ public class ClassController {
             }
             else {
                 Connection connect = new Connection(selected,(ClassBox)event.getTarget());
-                panel.getChildren().add(connect);
+                anchorPane.getChildren().add(connect);
                 connections.add(connect);
                 selected.addStart(connect);
                 ((ClassBox)event.getTarget()).addEnd(connect);
@@ -133,16 +139,35 @@ public class ClassController {
             }
         }
     }
+    /*
     public void classPress(MouseEvent event){
         x = event.getSceneX();
         y = event.getSceneY();
         newx = ((ClassBox)(event.getSource())).getTranslateX();
         newy = ((ClassBox)(event.getSource())).getTranslateY();
-    }
+    }*/
     //Ovládání drag-move objektem třídy
     public void classMove(MouseEvent event){
-        double offsetX = event.getSceneX() - x;
-        double offsetY = event.getSceneY() - y;
-        ((ClassBox)(event.getSource())).change(offsetX, offsetY);
+        System.out.println("Calling classMove");
+        ClassBox movingBox = ((ClassBox)(event.getSource()));
+        if (inTheWindow((ClassBox)(event.getSource())))  {
+            System.out.println("Box is in the anchorPane");
+            double offsetX = event.getX() - x;
+            double offsetY = event.getY() - y;
+            System.out.println(offsetX + ", " + offsetY);
+            movingBox.setX(offsetX);
+            movingBox.setY(offsetY);
+        } else {
+            System.out.println("Box is outside the anchorPane");
+            double offsetX = event.getX() - x;
+            double offsetY = event.getY() - y;
+            movingBox.setX(offsetX);
+            movingBox.setY(offsetY);
+        }
+        //-System.out.println("classMove position" + newx + ", " + newy);
+    }
+
+    private boolean inTheWindow(ClassBox box) {
+        return anchorPane.getLayoutBounds().contains(box.getBoundsInParent());
     }
 }
