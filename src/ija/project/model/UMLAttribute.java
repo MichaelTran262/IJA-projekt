@@ -1,18 +1,26 @@
 package ija.project.model;
 
 public class UMLAttribute extends  Element {
-    private final UMLClassifier type;
+    //private final UMLClassifier type;
+    private final String type;
 
-    public UMLAttribute(String name, UMLClassifier type) {
+    public UMLAttribute(String name) {
+        super(name);
+        this.type = "";
+    }
+    public UMLAttribute(String name, String type) {
         super(name);
         this.type = type;
     }
 
-    public UMLClassifier getType() {
+    public String getType() {
         return this.type;
     }
 
     public String toString() {
-        return name + ":" + type;
+        if (type != "") {
+            return name + ":<" + type + ">";
+        }
+        return name;
     }
 }

@@ -1,13 +1,21 @@
 package ija.project.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import ija.project.model.ClassDiagram;
+import ija.project.model.UMLAttribute;
+import ija.project.model.UMLClass;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
@@ -24,9 +32,6 @@ public class ClassController {
     public Text boxCoordinates;
     public Text textMode;
 
-    public void addAttribute(ActionEvent event) {
-    }
-
     private enum Mode{
         select, connect, delete;
     }
@@ -39,10 +44,9 @@ public class ClassController {
     private AnchorPane anchorPane;
     private ArrayList<ClassBox> seznam = new ArrayList<ClassBox>();
     private ArrayList<Line> connections = new ArrayList<Line>();
+    private ClassDiagram diagram = new ClassDiagram("Diagram");
     private double x;
     private double y;
-    private double tmp_x;
-    private double tmp_y;
     private int number = 1;
     private int numberToDelete = 0;
     private ClassBox selected = null;
@@ -60,13 +64,35 @@ public class ClassController {
         stage.show();
     }*/
 
+    public void openAttributeWindow(ClassBox box) {
+        UMLClass curr_class = box.getUMLClass();
+        Parent root;
+        try {
+            root = FXMLLoader.load(getClass().getClassLoader().getResource("addAttributeWindow.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Přidat atribut");
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.show();
+            // Hide this current window (if this is what you want)
+            //((Node)(event.getSource())).getScene().getWindow().hide();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addAttribute(ActionEvent event, Stage stage, UMLClass cl) {
+
+    }
+
     public void addClass(ActionEvent event){
         System.out.println("Calling addClass");
-        ClassBox rectangle = new ClassBox(number++);
-        //rectangle.relocate(x+=100,y+=0);
-        //rectangle.setId(Integer.toString(number++));
-        //rectangle.setOnMouseClicked(this::classClick);
-        //rectangle.setOnMouseDragged(this::classMove);
+        // Create class to model
+        UMLClass new_class = diagram.createClass("Title " + number++);
+        boolean made = (new_class.addAttribute(new UMLAttribute("jméno")));
+        // Creating GUI
+        ClassBox rectangle = new ClassBox(new_class);
         draggable(rectangle);
         connectable(rectangle);
         rectangle.toFront();
@@ -83,35 +109,86 @@ public class ClassController {
 
         //Prompt the user that the node can be dragged
         node.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
-            node.setCursor(Cursor.MOVE);
+            if (event.getButton() == MouseButton.PRIMARY) {
+                if (mouseMode == Mode.select) {
+                    node.setCursor(Cursor.MOVE);
+                    //When a press event occurs, the location coordinates of the event are cached
+                    pos.x = event.getX();
+                    pos.y = event.getY();
+                }
 
-            //When a press event occurs, the location coordinates of the event are cached
-            pos.x = event.getX();
-            pos.y = event.getY();
+            } else if (event.getButton() == MouseButton.SECONDARY){
+                System.out.println("RIGHT CLICK");
+                ContextMenu contextMenu = new ContextMenu();
+                /*
+                MenuItem menuItem1 = new MenuItem("Změnit název");
+                editable(menuItem1);
+                MenuItem menuItem2 = new MenuItem("Změnit atributy");
+                editable(menuItem2);*/
+                MenuItem menuItem3 = new MenuItem("Přidat atribut");
+                menuItem3.setOnAction(actionEvent-> {
+                    openAttributeWindow((ClassBox)event.getSource());
+                });
+                // TODO: MenuItem1, MenuItem2
+                contextMenu.getItems().addAll(menuItem3);
+                node.setOnContextMenuRequested( contextEvent -> {
+                    contextMenu.show(node, contextEvent.getScreenX(), contextEvent.getScreenY());
+                });
+
+            }
         });
+
         node.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> node.setCursor(Cursor.DEFAULT));
 
         //Realize drag and drop function
         node.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
-            double distanceX = event.getX() - pos.x;
-            double distanceY = event.getY() - pos.y;
+            if (mouseMode == Mode.select) {
+                double distanceX = event.getX() - pos.x;
+                double distanceY = event.getY() - pos.y;
 
 
-            double new_x = node.getLayoutX() + distanceX;
-            double new_y = node.getLayoutY() + distanceY;
-            boxCoordinates.setText("Selected box: X = " + new_x + ", Y = " + new_y);
-            //After calculating X and y, relocate the node to the specified coordinate point (x, y)
-            if (new_x < 0 && new_y < 0) {
-                node.relocate(0, 0);
-            } else if (new_y < 0) {
-                node.relocate(new_x, 0);
-            } else if (new_x < 0) {
-                node.relocate(0, new_y);
-            } else {
-                node.relocate(new_x, new_y);
+                double new_x = node.getLayoutX() + distanceX;
+                double new_y = node.getLayoutY() + distanceY;
+                boxCoordinates.setText("Selected box: X = " + new_x + ", Y = " + new_y);
+                //After calculating X and y, relocate the node to the specified coordinate point (x, y)
+                if (new_x < 0 && new_y < 0) {
+                    node.relocate(0, 0);
+                } else if (new_y < 0) {
+                    node.relocate(new_x, 0);
+                } else if (new_x < 0) {
+                    node.relocate(0, new_y);
+                } else {
+                    node.relocate(new_x, new_y);
+                }
             }
         });
     }
+    /*
+    public void editable(MenuItem menuItem) {
+        menuItem.setOnAction(actionEvent-> {
+            Parent root;
+            try {
+                String text = menuItem.getText();
+                switch (text) {
+                    case "Změnit název":
+                        root = FXMLLoader.load(getClass().getClassLoader().getResource("editNameWindow.fxml"));
+                        break;
+                    case "Změnit atributy":
+                        root = FXMLLoader.load(getClass().getClassLoader().getResource("editAttributesWindow.fxml"));
+                        break;
+                }
+                Stage stage = new Stage();
+                stage.setTitle("Edit attribut");
+                stage.setScene(new Scene(root, 450, 450));
+                stage.show();
+                // Hide this current window (if this is what you want)
+                //((Node)(event.getSource())).getScene().getWindow().hide();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }*/
 
 
     /*public void Delete(ActionEvent event){
@@ -123,7 +200,7 @@ public class ClassController {
     //Ovládání toggle tlačítka select
     public void changeToSelect(ActionEvent event){
         System.out.println("Calling changeToSelect");
-        textMode.setText("Mode: Select");
+        textMode.setText("Mode:\n Select");
         selected = null;
         if(mouseMode == Mode.select){
             selectButton.setSelected(true);
@@ -135,7 +212,7 @@ public class ClassController {
     //Ovládání toggle tlačítka delete
     public void changeToDelete(ActionEvent event){
         System.out.println("Calling changeDelete");
-        textMode.setText("Mode: Delete");
+        textMode.setText("Mode:\n Delete");
         if(mouseMode == Mode.delete){
             mouseMode = Mode.select;
             deleteButton.setSelected(false);
@@ -150,7 +227,7 @@ public class ClassController {
     //Ovládání toggle tlačítka connect
     public void changeToConnect(ActionEvent event){
         System.out.println("Calling changeToConnect");
-        textMode.setText("Mode: Connect");
+        textMode.setText("Mode:\n Connect");
         if(mouseMode == Mode.connect){
             mouseMode = Mode.select;
             connectButton.setSelected(false);
@@ -182,6 +259,7 @@ public class ClassController {
                     if (selected == null) {
                         System.out.println("Connection select 1");
                         selected = (ClassBox)event.getSource();
+                        selected.setStyle("-fx-border-color: green");
                     } else {
                         System.out.println("Connection select 2");
                         ClassBox start = selected;
@@ -195,6 +273,7 @@ public class ClassController {
                         connections.add(connect);
                         connectButton.setSelected(false);
                         selectButton.setSelected(true);
+                        selected.setStyle("-fx-border-style: none");
                         selected = null;
                     }
             }

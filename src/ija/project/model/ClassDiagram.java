@@ -43,4 +43,13 @@ public class ClassDiagram extends Element{
         }
         return null;
     }
+
+    public UMLClass getClassByName(String name) {
+        for (UMLClass cl : classesList) {
+            if (name.equals(cl.getName())) {
+                return cl;
+            }
+        }
+        return null;
+    }
 }
