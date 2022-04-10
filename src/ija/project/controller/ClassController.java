@@ -7,7 +7,9 @@ import java.util.List;
 import ija.project.model.ClassBox;
 import ija.project.model.Connection;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -19,6 +21,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
 
@@ -26,6 +29,9 @@ public class ClassController {
     public ToggleButton deleteButton;
     public ToggleButton connectButton;
     public ToggleButton selectButton;
+    @FXML
+    public Text coordinatesText;
+    public Text boxCoordinates;
 
     private enum Mode{
         select, connect, delete;
@@ -37,14 +43,20 @@ public class ClassController {
     private Parent root;
     @FXML
     private AnchorPane anchorPane;
-    private List<ClassBox> seznam = new ArrayList<ClassBox>();
-    private List<Line> connections = new ArrayList<Line>();
+    private ArrayList<ClassBox> seznam = new ArrayList<ClassBox>();
+    private ArrayList<Line> connections = new ArrayList<Line>();
     private double x;
     private double y;
+    private double tmp_x;
+    private double tmp_y;
     private int number = 1;
     private int numberToDelete = 0;
     private ClassBox selected = null;
 
+    private static class Position {
+        double x;
+        double y;
+    }
     /*TODO Scene change
     public void switchToScene2(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("SequenceDiagram.fxml"));
@@ -56,18 +68,58 @@ public class ClassController {
 
     public void addClass(ActionEvent event){
         System.out.println("Calling addClass");
-        StackPane stp = new StackPane();
-        ClassBox rectangle = new ClassBox(40,80);
-        rectangle.relocate(x+=20,y+=30);
+        ClassBox rectangle = new ClassBox();
+        //rectangle.relocate(x+=100,y+=0);
         rectangle.setId(Integer.toString(number++));
-        rectangle.setOnMouseClicked(this::classClick);
-        //circle.setOnMousePressed(event1 -> {classPress(event1);});
-        rectangle.setOnMouseDragged(this::classMove);
-        rectangle.setStyle("-fx-fill: white; -fx-stroke: black; -fx-stroke-width: 2;");
-        //Class Name
+        //rectangle.setOnMouseClicked(this::classClick);
+        //rectangle.setOnMouseDragged(this::classMove);
+        draggable(rectangle);
+        connectable(rectangle);
+        rectangle.toFront();
         anchorPane.getChildren().add(rectangle);
         seznam.add(rectangle);
     }
+
+    private void draggable(Node node) {
+        final Position pos = new Position();
+
+        //Prompt the user that the node can be clicked
+        node.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> node.setCursor(Cursor.HAND));
+        node.addEventHandler(MouseEvent.MOUSE_EXITED, event -> node.setCursor(Cursor.DEFAULT));
+
+        //Prompt the user that the node can be dragged
+        node.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            node.setCursor(Cursor.MOVE);
+
+            //When a press event occurs, the location coordinates of the event are cached
+            pos.x = event.getX();
+            pos.y = event.getY();
+        });
+        node.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> node.setCursor(Cursor.DEFAULT));
+
+        //Realize drag and drop function
+        node.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
+            double distanceX = event.getX() - pos.x;
+            double distanceY = event.getY() - pos.y;
+
+
+            double new_x = node.getLayoutX() + distanceX;
+            double new_y = node.getLayoutY() + distanceY;
+            boxCoordinates.setText("Selected box: X = " + new_x + ", Y = " + new_y);
+            //After calculating X and y, relocate the node to the specified coordinate point (x, y)
+            if (new_x < 0 && new_y < 0) {
+                node.relocate(0, 0);
+            } else if (new_y < 0) {
+                node.relocate(new_x, 0);
+            } else if (new_x < 0) {
+                node.relocate(0, new_y);
+            } else {
+                node.relocate(new_x, new_y);
+            }
+        });
+    }
+
+
     /*public void Delete(ActionEvent event){
         String retez = "#";
         retez = retez.concat(Integer.toString(numberToDelete));
@@ -114,60 +166,43 @@ public class ClassController {
         }
     }
     //Ovládání objektu třídy při jednoduchém mouseClicku
-    public void classClick(MouseEvent event){
-        System.out.println("Calling classClick");
-        switch(mouseMode){
-            case select:
-                break;
-            case delete:
-                anchorPane.getChildren().remove(event.getTarget());
-                seznam.remove(((ClassBox)event.getTarget()).getId());
-                break;
-            case connect: if(selected == null) {
-                selected = (ClassBox) event.getTarget();
+    private void connectable(Node node) {
+        node.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            node.setCursor(Cursor.HAND);
+            switch (mouseMode){
+                case select:
+                    break;
+                case delete:
+                    anchorPane.getChildren().remove(node);
+                    seznam.remove(node.getId());
+                    break;
+                case connect:
+                    if (selected == null) {
+                        System.out.println("Connection select 1");
+                        selected = (ClassBox)event.getSource();
+                    } else {
+                        System.out.println("Connection select 2");
+                        ClassBox start = selected;
+                        ClassBox end = (ClassBox)event.getSource();
+                        Connection connect = new Connection(start, end);
+                        anchorPane.getChildren().add(connect);
+                        start.toFront();
+                        end.toFront();
+                        connections.add(connect);
+                        connectButton.setSelected(false);
+                        selectButton.setSelected(true);
+                        selected = null;
+                    }
             }
-            else {
-                Connection connect = new Connection(selected,(ClassBox)event.getTarget());
-                anchorPane.getChildren().add(connect);
-                connections.add(connect);
-                selected.addStart(connect);
-                ((ClassBox)event.getTarget()).addEnd(connect);
-                mouseMode = Mode.select;
-                connectButton.setSelected(false);
-                selectButton.setSelected(true);
-                selected = null;
-            }
-        }
-    }
-    /*
-    public void classPress(MouseEvent event){
-        x = event.getSceneX();
-        y = event.getSceneY();
-        newx = ((ClassBox)(event.getSource())).getTranslateX();
-        newy = ((ClassBox)(event.getSource())).getTranslateY();
-    }*/
-    //Ovládání drag-move objektem třídy
-    public void classMove(MouseEvent event){
-        System.out.println("Calling classMove");
-        ClassBox movingBox = ((ClassBox)(event.getSource()));
-        if (inTheWindow((ClassBox)(event.getSource())))  {
-            System.out.println("Box is in the anchorPane");
-            double offsetX = event.getX() - x;
-            double offsetY = event.getY() - y;
-            System.out.println(offsetX + ", " + offsetY);
-            movingBox.setX(offsetX);
-            movingBox.setY(offsetY);
-        } else {
-            System.out.println("Box is outside the anchorPane");
-            double offsetX = event.getX() - x;
-            double offsetY = event.getY() - y;
-            movingBox.setX(offsetX);
-            movingBox.setY(offsetY);
-        }
-        //-System.out.println("classMove position" + newx + ", " + newy);
+        });
     }
 
     private boolean inTheWindow(ClassBox box) {
         return anchorPane.getLayoutBounds().contains(box.getBoundsInParent());
+    }
+
+    @FXML
+    private void setCoordinatesText(MouseEvent event){
+        coordinatesText.setText("Mouse: X = " + event.getX() + ", Y = " + event.getY());
     }
 }

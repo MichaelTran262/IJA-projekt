@@ -8,9 +8,13 @@ public class Connection extends Line {
     private ClassBox end;
 
     public Connection(ClassBox start, ClassBox end){
-        super(start.getX(),start.getY(),end.getX(),end.getY());
+        super();
+        this.startXProperty().bind(start.layoutXProperty().add(start.widthProperty().divide(2)));
+        this.startYProperty().bind(start.layoutYProperty().add(start.heightProperty().divide(2)));
+        this.endXProperty().bind(end.layoutXProperty().add(end.widthProperty().divide(2)));
+        this.endYProperty().bind(end.layoutYProperty().add(end.heightProperty().divide(2)));
         this.setStroke(Color.BLACK);
-        this.setStrokeWidth(1);
+        this.setStrokeWidth(2);
         this.start = start;
         this.end = end;
     }

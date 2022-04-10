@@ -3,3 +3,7 @@
     -fx-border-style: "solid";
     -fx-border-color: "black";
 }
+
+Text {
+    -fx-background-color: "white";
+}
