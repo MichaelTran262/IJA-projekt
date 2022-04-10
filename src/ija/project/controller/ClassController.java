@@ -1,25 +1,15 @@
 package ija.project.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
-import ija.project.model.ClassBox;
-import ija.project.model.Connection;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -32,6 +22,10 @@ public class ClassController {
     @FXML
     public Text coordinatesText;
     public Text boxCoordinates;
+    public Text textMode;
+
+    public void addAttribute(ActionEvent event) {
+    }
 
     private enum Mode{
         select, connect, delete;
@@ -68,9 +62,9 @@ public class ClassController {
 
     public void addClass(ActionEvent event){
         System.out.println("Calling addClass");
-        ClassBox rectangle = new ClassBox();
+        ClassBox rectangle = new ClassBox(number++);
         //rectangle.relocate(x+=100,y+=0);
-        rectangle.setId(Integer.toString(number++));
+        //rectangle.setId(Integer.toString(number++));
         //rectangle.setOnMouseClicked(this::classClick);
         //rectangle.setOnMouseDragged(this::classMove);
         draggable(rectangle);
@@ -129,6 +123,7 @@ public class ClassController {
     //Ovládání toggle tlačítka select
     public void changeToSelect(ActionEvent event){
         System.out.println("Calling changeToSelect");
+        textMode.setText("Mode: Select");
         selected = null;
         if(mouseMode == Mode.select){
             selectButton.setSelected(true);
@@ -140,6 +135,7 @@ public class ClassController {
     //Ovládání toggle tlačítka delete
     public void changeToDelete(ActionEvent event){
         System.out.println("Calling changeDelete");
+        textMode.setText("Mode: Delete");
         if(mouseMode == Mode.delete){
             mouseMode = Mode.select;
             deleteButton.setSelected(false);
@@ -154,6 +150,7 @@ public class ClassController {
     //Ovládání toggle tlačítka connect
     public void changeToConnect(ActionEvent event){
         System.out.println("Calling changeToConnect");
+        textMode.setText("Mode: Connect");
         if(mouseMode == Mode.connect){
             mouseMode = Mode.select;
             connectButton.setSelected(false);
@@ -173,8 +170,13 @@ public class ClassController {
                 case select:
                     break;
                 case delete:
+                    ClassBox to_remove = (ClassBox)event.getSource();
+                    for(Connection conn : to_remove.getConnections()) {
+                        anchorPane.getChildren().remove(conn);
+                    }
                     anchorPane.getChildren().remove(node);
                     seznam.remove(node.getId());
+
                     break;
                 case connect:
                     if (selected == null) {
@@ -186,6 +188,8 @@ public class ClassController {
                         ClassBox end = (ClassBox)event.getSource();
                         Connection connect = new Connection(start, end);
                         anchorPane.getChildren().add(connect);
+                        start.appendConnection(connect);
+                        end.appendConnection(connect);
                         start.toFront();
                         end.toFront();
                         connections.add(connect);

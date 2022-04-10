@@ -1,5 +1,6 @@
-package ija.project.model;
+package ija.project.controller;
 
+import ija.project.controller.ClassBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
@@ -17,5 +18,13 @@ public class Connection extends Line {
         this.setStrokeWidth(2);
         this.start = start;
         this.end = end;
+    }
+
+    public ClassBox getStart() {
+        return start;
+    }
+
+    public ClassBox getEnd() {
+        return end;
     }
 }
