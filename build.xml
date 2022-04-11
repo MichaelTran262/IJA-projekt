@@ -40,7 +40,7 @@
             <zipgroupfileset dir="lib" includes="**/*.jar"/>
             <fileset dir="data">
                 <include name="Main.fxml"/>
-                <include name="Box.fxml"/>
+                <include name="addAttributeWindow.fxml"/>
                 <include name="application.css"/>
             </fileset>
         </jar>

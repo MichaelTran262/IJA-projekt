@@ -6,11 +6,11 @@ import java.util.List;
 public class UMLOperation extends UMLAttribute {
     private UMLAttribute[] args;
 
-    public UMLOperation(String name, UMLClassifier type) {
+    public UMLOperation(String name, String type) {
         super(name, type);
     }
 
-    public static UMLOperation create(String name, UMLClassifier type, UMLAttribute... args) {
+    public static UMLOperation create(String name, String type, UMLAttribute... args) {
         UMLOperation newOperation = new UMLOperation(name, type);
         newOperation.args = args;
         return newOperation;
