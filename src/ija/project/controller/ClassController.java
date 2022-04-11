@@ -12,9 +12,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -31,6 +29,9 @@ public class ClassController {
     public Text coordinatesText;
     public Text boxCoordinates;
     public Text textMode;
+    public TextField formNameField;
+    public TextField formTypeField;
+
 
     private enum Mode{
         select, connect, delete;
@@ -50,6 +51,7 @@ public class ClassController {
     private int number = 1;
     private int numberToDelete = 0;
     private ClassBox selected = null;
+    private UMLClass curr_class;
 
     private static class Position {
         double x;
@@ -64,8 +66,14 @@ public class ClassController {
         stage.show();
     }*/
 
+    public void addAttribute(ActionEvent event) {
+        System.out.println("Add attribute " + formNameField.getCharacters().toString() + "Typu: " + formTypeField.getCharacters().toString() + " Do tridy " + curr_class.getName());
+        //addClassAttribute(event,);
+    }
+
     public void openAttributeWindow(ClassBox box) {
-        UMLClass curr_class = box.getUMLClass();
+        curr_class = box.getUMLClass();
+        System.out.println("Jdem přidat atribut do třídy " + curr_class.getName());
         Parent root;
         try {
             root = FXMLLoader.load(getClass().getClassLoader().getResource("addAttributeWindow.fxml"));
@@ -82,7 +90,7 @@ public class ClassController {
         }
     }
 
-    public void addAttribute(ActionEvent event, Stage stage, UMLClass cl) {
+    public void addClassAttribute(ActionEvent event, Stage stage, UMLClass cl) {
 
     }
 
@@ -215,6 +223,7 @@ public class ClassController {
         textMode.setText("Mode:\n Delete");
         if(mouseMode == Mode.delete){
             mouseMode = Mode.select;
+            textMode.setText("Mode:\n Select");
             deleteButton.setSelected(false);
             selectButton.setSelected(true);
         }
@@ -230,6 +239,7 @@ public class ClassController {
         textMode.setText("Mode:\n Connect");
         if(mouseMode == Mode.connect){
             mouseMode = Mode.select;
+            textMode.setText("Mode:\n Select");
             connectButton.setSelected(false);
             selectButton.setSelected(true);
         }
