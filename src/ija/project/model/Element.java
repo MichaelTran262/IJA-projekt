@@ -11,7 +11,7 @@ public class Element {
         return name;
     }
 
-    public void rename(String newName) {
+    public void setName(String newName) {
         name = newName;
     }
 }

@@ -1,5 +1,12 @@
-# IJA-projekt
+# IJA - Úkol 3
 
-## Popis
+## Členové týmu
+Tran Thanh Quang M. - xtrant02
 
-Projekt do předmětu IJA 2021/2022
+Lukáš Fuis - xfuisl00
+
+##Překlad a spuštění
+Přeložení a spuštění projektu proběhne po zadání příkazu `ant run`
+
+##Funkce aplikace
+Uživatel může vytvořit třídu

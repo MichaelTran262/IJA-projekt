@@ -31,6 +31,18 @@ public class UMLClass extends UMLClassifier {
         }
     }
 
+    public void removeAttribute(String name) {
+        for (UMLAttribute attr : attributeList) {
+            System.out.println("Attr.getName() = " + attr.getName());
+            if (attr.getName().equals(name)) {
+                attributeList.remove(attr);
+                System.out.println("Attribute removed");
+                break;
+            }
+        }
+    }
+
+
     public int getAttrPosition(UMLAttribute attr) {
         return attributeList.indexOf(attr);
     }
