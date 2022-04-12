@@ -3,6 +3,9 @@ package ija.project.model;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Třída reprezentuje operaci, která má své jméno, návratový typ a seznam argumentů.
+ */
 public class UMLOperation extends UMLAttribute {
     private UMLAttribute[] args;
 

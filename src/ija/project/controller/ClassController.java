@@ -21,6 +21,14 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
 
+/**
+ * @author      Lukáš Fuis      <xfuisl00 @ stud.fit.vutbr.cz>
+ * @version     0.5
+ */
+
+/**
+ *  Třída reprezentující GUI diagramu tříd
+ */
 public class ClassController {
     public ToggleButton deleteButton;
     public ToggleButton connectButton;
@@ -46,8 +54,6 @@ public class ClassController {
     private ArrayList<ClassBox> seznam = new ArrayList<ClassBox>();
     private ArrayList<Line> connections = new ArrayList<Line>();
     private ClassDiagram diagram = new ClassDiagram("Diagram");
-    private double x;
-    private double y;
     private int number = 1;
     private int numberToDelete = 0;
     private ClassBox selected = null;
@@ -58,6 +64,10 @@ public class ClassController {
         double y;
     }
 
+    /**
+     * Funkce přidá GUI instanci třídy Classbox do diagramu tříd
+     * @param cl Třída UML, která Classbox reprezentuje
+     */
     public void addClass(ActionEvent event){
         System.out.println("Calling addClass");
         // Create class to model
@@ -73,6 +83,10 @@ public class ClassController {
         seznam.add(rectangle);
     }
 
+    /**
+     * Funkce přidává vlastnoti interakce dané GUI komponenty
+     * @param node GUI komponenta, ke které se přidají vlastnosti interakce
+     */
     private void draggable(Node node) {
         final Position pos = new Position();
 
@@ -119,7 +133,10 @@ public class ClassController {
         });
     }
 
-    //Ovládání toggle tlačítka select
+    /**
+     * Funkce změní uživatelský mod na Select
+     * @param event JavaFX ActionEvent
+     */
     public void changeToSelect(ActionEvent event){
         System.out.println("Calling changeToSelect");
         textMode.setText("Mode:\n Select");
@@ -131,7 +148,11 @@ public class ClassController {
         deleteButton.setSelected(false);
         connectButton.setSelected(false);
     }
-    //Ovládání toggle tlačítka delete
+
+    /**
+     * Funkce změní uživatelský mod na Delete
+     * @param event JavaFX ActionEvent
+     */
     public void changeToDelete(ActionEvent event){
         System.out.println("Calling changeDelete");
         textMode.setText("Mode:\n Delete");
@@ -147,7 +168,11 @@ public class ClassController {
             connectButton.setSelected(false);
         }
     }
-    //Ovládání toggle tlačítka connect
+
+    /**
+     * Funkce změní uživatelský mod na Connect
+     * @param event JavaFX ActionEvent
+     */
     public void changeToConnect(ActionEvent event){
         System.out.println("Calling changeToConnect");
         textMode.setText("Mode:\n Connect");
@@ -163,7 +188,11 @@ public class ClassController {
             selectButton.setSelected(false);
         }
     }
-    //Ovládání objektu třídy při jednoduchém mouseClicku
+
+    /**
+     * Funkce přidá dané komponentě vlastnost mít vazby
+     * @param node komponenta, která získá schopnost mít vazbu
+     */
     private void connectable(Node node) {
         node.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             node.setCursor(Cursor.HAND);
@@ -204,6 +233,10 @@ public class ClassController {
         });
     }
 
+    /**
+     * Funkce vypisuje souřadice kurzoru v pracovním prostoru diagramu tříd
+     * @param event JavaFX MouseEvent
+     */
     @FXML
     private void setCoordinatesText(MouseEvent event){
         coordinatesText.setText("Mouse: X = " + event.getX() + ", Y = " + event.getY());
