@@ -66,11 +66,7 @@ public class ClassController {
         stage.show();
     }*/
 
-    public void addAttribute(ActionEvent event) {
-        System.out.println("Add attribute " + formNameField.getCharacters().toString() + "Typu: " + formTypeField.getCharacters().toString() + " Do tridy " + curr_class.getName());
-        //addClassAttribute(event,);
-    }
-
+    /*
     public void openAttributeWindow(ClassBox box) {
         curr_class = box.getUMLClass();
         System.out.println("Jdem přidat atribut do třídy " + curr_class.getName());
@@ -88,9 +84,9 @@ public class ClassController {
         catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    public void addClassAttribute(ActionEvent event, Stage stage, UMLClass cl) {
+    public void addClassAttribute(ClassBox box) {
 
     }
 
@@ -99,8 +95,12 @@ public class ClassController {
         // Create class to model
         UMLClass new_class = diagram.createClass("Title " + number++);
         boolean made = (new_class.addAttribute(new UMLAttribute("jméno")));
+        made = (new_class.addAttribute(new UMLAttribute("mail")));
         // Creating GUI
         ClassBox rectangle = new ClassBox(new_class);
+        for (Node child : rectangle.getChildren()) {
+            connectable(child);
+        }
         draggable(rectangle);
         connectable(rectangle);
         rectangle.toFront();
@@ -133,16 +133,17 @@ public class ClassController {
                 editable(menuItem1);
                 MenuItem menuItem2 = new MenuItem("Změnit atributy");
                 editable(menuItem2);*/
-                MenuItem menuItem3 = new MenuItem("Přidat atribut");
-                menuItem3.setOnAction(actionEvent-> {
-                    openAttributeWindow((ClassBox)event.getSource());
+                MenuItem menuItem1 = new MenuItem("Přidat atribut");
+                menuItem1.setOnAction(actionEvent-> {
+                    addClassAttribute((ClassBox)event.getSource());
                 });
-                // TODO: MenuItem1, MenuItem2
-                contextMenu.getItems().addAll(menuItem3);
+                MenuItem menuItem2 = new MenuItem("Smazat atribut");
+                menuItem2.setOnAction(actionEvent-> {
+                    //removeClassAttribute((ClassBox)event.getSource());
+                });
                 node.setOnContextMenuRequested( contextEvent -> {
                     contextMenu.show(node, contextEvent.getScreenX(), contextEvent.getScreenY());
                 });
-
             }
         });
 
@@ -199,12 +200,7 @@ public class ClassController {
     }*/
 
 
-    /*public void Delete(ActionEvent event){
-        String retez = "#";
-        retez = retez.concat(Integer.toString(numberToDelete));
-        panel.getChildren().remove(panel.lookup(retez));
-        numberToDelete++;
-    }*/
+
     //Ovládání toggle tlačítka select
     public void changeToSelect(ActionEvent event){
         System.out.println("Calling changeToSelect");
@@ -298,4 +294,5 @@ public class ClassController {
     private void setCoordinatesText(MouseEvent event){
         coordinatesText.setText("Mouse: X = " + event.getX() + ", Y = " + event.getY());
     }
+
 }
