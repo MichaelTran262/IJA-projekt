@@ -3,20 +3,16 @@ package ija.project.controller;
 import ija.project.model.ClassDiagram;
 import ija.project.model.UMLAttribute;
 import ija.project.model.UMLClass;
-import javafx.event.Event;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 

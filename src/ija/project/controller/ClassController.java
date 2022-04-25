@@ -1,5 +1,6 @@
 package ija.project.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -18,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
 
@@ -39,7 +41,8 @@ public class ClassController {
     public Text textMode;
     public TextField formNameField;
     public TextField formTypeField;
-
+    public MenuItem saveFileItem;
+    public MenuItem loadFileItem;
 
     private enum Mode{
         select, connect, delete;
@@ -55,9 +58,8 @@ public class ClassController {
     private ArrayList<Line> connections = new ArrayList<Line>();
     private ClassDiagram diagram = new ClassDiagram("Diagram");
     private int number = 1;
-    private int numberToDelete = 0;
     private ClassBox selected = null;
-    private UMLClass curr_class;
+    private FileHandler fileHandler = new FileHandler(null);
 
     private static class Position {
         double x;
@@ -66,7 +68,6 @@ public class ClassController {
 
     /**
      * Funkce přidá GUI instanci třídy Classbox do diagramu tříd
-     * @param cl Třída UML, která Classbox reprezentuje
      */
     public void addClass(ActionEvent event){
         System.out.println("Calling addClass");
@@ -242,4 +243,20 @@ public class ClassController {
         coordinatesText.setText("Mouse: X = " + event.getX() + ", Y = " + event.getY());
     }
 
+    @FXML
+    private void loadFile(ActionEvent event) {
+        FileChooser fc = new FileChooser();
+        File selectedFile = fc.showOpenDialog(null);
+
+        if (selectedFile != null) {
+            seznam.clear();
+            connections.clear();
+            anchorPane.getChildren().clear();
+            fileHandler.setFile(selectedFile);
+            fileHandler.parseFile();
+        } else {
+            System.out.println("Not a valid file");
+        }
+        
+    }
 }
