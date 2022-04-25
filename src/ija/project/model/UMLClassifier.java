@@ -1,5 +1,9 @@
 package ija.project.model;
 
+/**
+ * Třída reprezentuje klasifikátor v diagramu.
+ * Odvozené třídy reprezentují konkrétní podoby klasifikátoru (třída, rozhraní, atribut, apod.)
+ */
 public class UMLClassifier extends Element {
     private final boolean isUserDefined;
 

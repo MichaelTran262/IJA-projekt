@@ -21,6 +21,14 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
 
+/**
+ * @author      Lukáš Fuis      <xfuisl00 @ stud.fit.vutbr.cz>
+ * @version     0.5
+ */
+
+/**
+ *  Třída reprezentující GUI diagramu tříd
+ */
 public class ClassController {
     public ToggleButton deleteButton;
     public ToggleButton connectButton;
@@ -46,8 +54,6 @@ public class ClassController {
     private ArrayList<ClassBox> seznam = new ArrayList<ClassBox>();
     private ArrayList<Line> connections = new ArrayList<Line>();
     private ClassDiagram diagram = new ClassDiagram("Diagram");
-    private double x;
-    private double y;
     private int number = 1;
     private int numberToDelete = 0;
     private ClassBox selected = null;
@@ -57,39 +63,11 @@ public class ClassController {
         double x;
         double y;
     }
-    /*TODO Scene change
-    public void switchToScene2(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("SequenceDiagram.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
-    }*/
 
-    /*
-    public void openAttributeWindow(ClassBox box) {
-        curr_class = box.getUMLClass();
-        System.out.println("Jdem přidat atribut do třídy " + curr_class.getName());
-        Parent root;
-        try {
-            root = FXMLLoader.load(getClass().getClassLoader().getResource("addAttributeWindow.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("Přidat atribut");
-            stage.setScene(new Scene(root));
-            stage.setResizable(false);
-            stage.show();
-            // Hide this current window (if this is what you want)
-            //((Node)(event.getSource())).getScene().getWindow().hide();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
-
-    public void addClassAttribute(ClassBox box) {
-
-    }
-
+    /**
+     * Funkce přidá GUI instanci třídy Classbox do diagramu tříd
+     * @param cl Třída UML, která Classbox reprezentuje
+     */
     public void addClass(ActionEvent event){
         System.out.println("Calling addClass");
         // Create class to model
@@ -98,9 +76,6 @@ public class ClassController {
         made = (new_class.addAttribute(new UMLAttribute("mail")));
         // Creating GUI
         ClassBox rectangle = new ClassBox(new_class);
-        for (Node child : rectangle.getChildren()) {
-            connectable(child);
-        }
         draggable(rectangle);
         connectable(rectangle);
         rectangle.toFront();
@@ -108,6 +83,10 @@ public class ClassController {
         seznam.add(rectangle);
     }
 
+    /**
+     * Funkce přidává vlastnoti interakce dané GUI komponenty
+     * @param node GUI komponenta, ke které se přidají vlastnosti interakce
+     */
     private void draggable(Node node) {
         final Position pos = new Position();
 
@@ -125,25 +104,6 @@ public class ClassController {
                     pos.y = event.getY();
                 }
 
-            } else if (event.getButton() == MouseButton.SECONDARY){
-                System.out.println("RIGHT CLICK");
-                ContextMenu contextMenu = new ContextMenu();
-                /*
-                MenuItem menuItem1 = new MenuItem("Změnit název");
-                editable(menuItem1);
-                MenuItem menuItem2 = new MenuItem("Změnit atributy");
-                editable(menuItem2);*/
-                MenuItem menuItem1 = new MenuItem("Přidat atribut");
-                menuItem1.setOnAction(actionEvent-> {
-                    addClassAttribute((ClassBox)event.getSource());
-                });
-                MenuItem menuItem2 = new MenuItem("Smazat atribut");
-                menuItem2.setOnAction(actionEvent-> {
-                    //removeClassAttribute((ClassBox)event.getSource());
-                });
-                node.setOnContextMenuRequested( contextEvent -> {
-                    contextMenu.show(node, contextEvent.getScreenX(), contextEvent.getScreenY());
-                });
             }
         });
 
@@ -172,36 +132,11 @@ public class ClassController {
             }
         });
     }
-    /*
-    public void editable(MenuItem menuItem) {
-        menuItem.setOnAction(actionEvent-> {
-            Parent root;
-            try {
-                String text = menuItem.getText();
-                switch (text) {
-                    case "Změnit název":
-                        root = FXMLLoader.load(getClass().getClassLoader().getResource("editNameWindow.fxml"));
-                        break;
-                    case "Změnit atributy":
-                        root = FXMLLoader.load(getClass().getClassLoader().getResource("editAttributesWindow.fxml"));
-                        break;
-                }
-                Stage stage = new Stage();
-                stage.setTitle("Edit attribut");
-                stage.setScene(new Scene(root, 450, 450));
-                stage.show();
-                // Hide this current window (if this is what you want)
-                //((Node)(event.getSource())).getScene().getWindow().hide();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }*/
 
-
-
-    //Ovládání toggle tlačítka select
+    /**
+     * Funkce změní uživatelský mod na Select
+     * @param event JavaFX ActionEvent
+     */
     public void changeToSelect(ActionEvent event){
         System.out.println("Calling changeToSelect");
         textMode.setText("Mode:\n Select");
@@ -213,7 +148,11 @@ public class ClassController {
         deleteButton.setSelected(false);
         connectButton.setSelected(false);
     }
-    //Ovládání toggle tlačítka delete
+
+    /**
+     * Funkce změní uživatelský mod na Delete
+     * @param event JavaFX ActionEvent
+     */
     public void changeToDelete(ActionEvent event){
         System.out.println("Calling changeDelete");
         textMode.setText("Mode:\n Delete");
@@ -229,7 +168,11 @@ public class ClassController {
             connectButton.setSelected(false);
         }
     }
-    //Ovládání toggle tlačítka connect
+
+    /**
+     * Funkce změní uživatelský mod na Connect
+     * @param event JavaFX ActionEvent
+     */
     public void changeToConnect(ActionEvent event){
         System.out.println("Calling changeToConnect");
         textMode.setText("Mode:\n Connect");
@@ -245,7 +188,11 @@ public class ClassController {
             selectButton.setSelected(false);
         }
     }
-    //Ovládání objektu třídy při jednoduchém mouseClicku
+
+    /**
+     * Funkce přidá dané komponentě vlastnost mít vazby
+     * @param node komponenta, která získá schopnost mít vazbu
+     */
     private void connectable(Node node) {
         node.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             node.setCursor(Cursor.HAND);
@@ -286,10 +233,10 @@ public class ClassController {
         });
     }
 
-    private boolean inTheWindow(ClassBox box) {
-        return anchorPane.getLayoutBounds().contains(box.getBoundsInParent());
-    }
-
+    /**
+     * Funkce vypisuje souřadice kurzoru v pracovním prostoru diagramu tříd
+     * @param event JavaFX MouseEvent
+     */
     @FXML
     private void setCoordinatesText(MouseEvent event){
         coordinatesText.setText("Mouse: X = " + event.getX() + ", Y = " + event.getY());

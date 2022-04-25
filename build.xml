@@ -16,13 +16,20 @@
         </fileset>
     </path>
 
+
     <target name="clean">
         <delete dir="${build}" />
         <delete dir="${dest}" />
+        <delete dir="${doc}" />
     </target>
 
-    <target name="compile" depends="clean">
+    <target name="init" depends="clean">
         <mkdir dir="${build}" />
+        <mkdir dir="${dest}" />
+        <mkdir dir="${doc}" />
+    </target>
+
+    <target name="compile" depends="doc">
         <javac srcdir="${src}" destdir="${build}" includeantruntime="false">
             <modulepath path="${javafx_lib}"/>
             <compilerarg line="--add-modules javafx.controls,javafx.fxml"/>
@@ -30,8 +37,8 @@
         </javac>
     </target>
 
+
     <target name="dest" depends="compile">
-        <mkdir dir="${dest}" />
         <jar destfile="${dest}/Main.jar" basedir="${build}">
             <manifest>
                 <attribute name="Main-Class"
@@ -52,4 +59,15 @@
             <jvmarg line="--add-modules javafx.controls,javafx.fxml"/>
         </java>
     </target>
+
+    <target name="doc" depends="init">
+        <javadoc sourcepath="${src}" destdir="${doc}" docfilessubdirs="true">
+            <modulepath path="${javafx_lib}"/>
+            <fileset dir="${src}" defaultexcludes="yes">
+                <include name="**/*.java"/>
+            </fileset>
+            <classpath refid="class.path"/>
+        </javadoc>
+    </target>
+
 </project>
