@@ -62,7 +62,6 @@
 
     <target name="doc" depends="init">
         <javadoc sourcepath="${src}" destdir="${doc}" docfilessubdirs="true">
-            <modulepath path="${javafx_lib}"/>
             <fileset dir="${src}" defaultexcludes="yes">
                 <include name="**/*.java"/>
             </fileset>
