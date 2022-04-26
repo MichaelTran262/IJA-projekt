@@ -28,7 +28,6 @@ import java.util.ArrayList;
  */
 public class ClassBox extends StackPane {
     private UMLClass cl;
-    private ClassDiagram diag;
     private TextField classTitle;
     private ArrayList<TextField> attributes = new ArrayList<TextField>();
     private ArrayList<Connection> connections = new ArrayList<Connection>();
@@ -115,6 +114,12 @@ public class ClassBox extends StackPane {
         update();
     }
 
+    public void addClassAttribute(String attr) {
+        this.cl.addAttribute(new UMLAttribute(attr));
+        this.getChildren().clear();
+        update();
+    }
+
     /**
      * Funkce odstraní atribut z třídy reprezentující model třídy z jazyka UMLenu
      * @param name jméno atributu, která bude odstraněna z instance UML třídy
@@ -149,5 +154,9 @@ public class ClassBox extends StackPane {
             this.getChildren().add(attr);
         }
         System.out.println(this.getHeight());
+    }
+
+    public String getClassName(){
+        return this.cl.getName();
     }
 }

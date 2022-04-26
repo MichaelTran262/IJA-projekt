@@ -16,8 +16,6 @@
         }
     ],
     "connections": [
-        {
-            "class01":"class02"
-        }
+        "class01--class02"
     ]
 }

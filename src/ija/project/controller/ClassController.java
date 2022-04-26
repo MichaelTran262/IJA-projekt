@@ -253,7 +253,7 @@ public class ClassController {
             connections.clear();
             anchorPane.getChildren().clear();
             fileHandler.setFile(selectedFile);
-            fileHandler.parseFile();
+            anchorPane.getChildren().addAll(fileHandler.parseFile());
         } else {
             System.out.println("Not a valid file");
         }
