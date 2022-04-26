@@ -15,6 +15,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -129,6 +130,10 @@ public class ClassBox extends StackPane {
         this.getChildren().clear();
         System.out.println(cl.getAttributes().toString());
         update();
+    }
+
+    public List<UMLAttribute> getClassAttributes() {
+        return this.cl.getAttributes();
     }
 
     /**

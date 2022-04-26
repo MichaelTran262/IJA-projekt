@@ -59,6 +59,7 @@ public class FileHandler {
                     //System.out.println(attributes.getString(j))
                     box.addClassAttribute(attributes.getString(j));
                 }
+                box.toFront();
                 classesList.add(box);
             }
             newPane.getChildren().addAll(classesList);
@@ -76,6 +77,10 @@ public class FileHandler {
                     }
                 }
                 Connection conn = new Connection(start, end);
+                start.appendConnection(conn);
+                end.appendConnection(conn);
+                conn.toBack();
+                lineList.add(conn);
             }
             newPane.getChildren().addAll(lineList);
         } catch (Exception e) {

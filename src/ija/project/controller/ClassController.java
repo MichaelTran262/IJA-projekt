@@ -1,8 +1,11 @@
 package ija.project.controller;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import ija.project.model.ClassDiagram;
 import ija.project.model.UMLAttribute;
@@ -22,6 +25,10 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import javax.swing.*;
 
 /**
  * @author      Lukáš Fuis      <xfuisl00 @ stud.fit.vutbr.cz>
@@ -55,11 +62,14 @@ public class ClassController {
     @FXML
     private AnchorPane anchorPane;
     private ArrayList<ClassBox> seznam = new ArrayList<ClassBox>();
-    private ArrayList<Line> connections = new ArrayList<Line>();
+    private ArrayList<Connection> connections = new ArrayList<Connection>();
     private ClassDiagram diagram = new ClassDiagram("Diagram");
     private int number = 1;
     private ClassBox selected = null;
     private FileHandler fileHandler = new FileHandler(null);
+
+    private double x = 0;
+    private double y = 0;
 
     private static class Position {
         double x;
@@ -80,7 +90,10 @@ public class ClassController {
         draggable(rectangle);
         connectable(rectangle);
         rectangle.toFront();
+        rectangle.relocate(x, y);
         anchorPane.getChildren().add(rectangle);
+        x += 120;
+        y += 10;
         seznam.add(rectangle);
     }
 
@@ -207,7 +220,6 @@ public class ClassController {
                     }
                     anchorPane.getChildren().remove(node);
                     seznam.remove(node.getId());
-
                     break;
                 case connect:
                     if (selected == null) {
@@ -247,16 +259,66 @@ public class ClassController {
     private void loadFile(ActionEvent event) {
         FileChooser fc = new FileChooser();
         File selectedFile = fc.showOpenDialog(null);
-
+        x = 20;
+        y = 10;
         if (selectedFile != null) {
             seznam.clear();
             connections.clear();
             anchorPane.getChildren().clear();
             fileHandler.setFile(selectedFile);
             anchorPane.getChildren().addAll(fileHandler.parseFile());
+            for(Node node: anchorPane.getChildren()) {
+                if(node instanceof ClassBox){
+                    draggable(node);
+                    connectable(node);
+                    node.relocate(x, y);
+                    x += 200;
+                    y += 10;
+                    seznam.add((ClassBox)node);
+                } else if (node instanceof Connection) {
+                    node.toBack();
+                    connections.add((Connection)node);
+                }
+            }
         } else {
             System.out.println("Not a valid file");
         }
-        
+    }
+
+    @FXML
+    private void saveToFile(ActionEvent event) {
+        FileChooser fc = new FileChooser();
+        File file = fc.showSaveDialog(new Stage());
+        if(file != null) {
+            JSONObject json = new JSONObject();
+            JSONArray classes = new JSONArray();
+            for (ClassBox cl : seznam) {
+                JSONObject tmp = new JSONObject();
+                tmp.put("name", cl.getClassName());
+                List<UMLAttribute> attributes = cl.getClassAttributes();
+                JSONArray jsonAttributeArray = new JSONArray();
+                for (UMLAttribute attr : attributes) {
+                    jsonAttributeArray.put(attr.getName());
+                }
+                tmp.put("attributes", jsonAttributeArray);
+                classes.put(tmp);
+            }
+            json.put("classes", classes);
+            JSONArray jsonConnections = new JSONArray();
+            for (Connection conn : connections) {
+                String connectionString = conn.getStart().getClassName() + "--" + conn.getEnd().getClassName();
+                jsonConnections.put(connectionString);
+            }
+            json.put("connections", jsonConnections);
+            String toFileString = json.toString();
+            System.out.println(toFileString);
+            try {
+                PrintWriter printWriter = new PrintWriter(file);
+                printWriter.write(toFileString);
+                printWriter.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();;
+            }
+        }
     }
 }
