@@ -47,6 +47,8 @@ public class ClassController {
     public Text coordinatesText;
     public Text boxCoordinates;
     public Text textMode;
+    public TextField formNameField;
+    public TextField formTypeField;
     public MenuItem saveFileItem;
     public MenuItem loadFileItem;
     public AnchorPane classDiagramWindow;
@@ -93,7 +95,10 @@ public class ClassController {
         draggable(rectangle);
         connectable(rectangle);
         rectangle.toFront();
+        rectangle.relocate(x, y);
         anchorPane.getChildren().add(rectangle);
+        x += 120;
+        y += 10;
         seznam.add(rectangle);
     }
 
@@ -260,13 +265,11 @@ public class ClassController {
     private void loadFile(ActionEvent event) {
         FileChooser fc = new FileChooser();
         File selectedFile = fc.showOpenDialog(null);
-        System.out.println("Jdu změnit hodnoty\n");
         selected = null;
         mouseMode = Mode.select;
         deleteButton.setSelected(false);
         selectButton.setSelected(true);
         connectButton.setSelected(false);
-        System.out.println("Hodnoty změněny\n");
         x = 20;
         y = 10;
         if (selectedFile != null) {
@@ -292,6 +295,7 @@ public class ClassController {
             System.out.println("Not a valid file");
         }
     }
+
     @FXML
     private void saveToFile(ActionEvent event) {
         FileChooser fc = new FileChooser();
@@ -346,7 +350,7 @@ public class ClassController {
         System.out.println("Current screen is: " + activeScene + "\n");
     }
 
-    
+
     public void switchToClass(ActionEvent event) throws IOException {
         System.out.println("Switch scene\n");
         Scene currScene = ((Node) event.getSource()).getScene();

@@ -135,6 +135,7 @@ public class ClassBox extends StackPane {
     public List<UMLAttribute> getClassAttributes() {
         return this.cl.getAttributes();
     }
+
     /**
      * Funkce změní jméno atributu (zatím nefunkční)
      * @param name jméno atributu, která bude změnena v instanci UML třídy

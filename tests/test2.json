@@ -1,0 +1,30 @@
+{
+    "classes": [
+        {
+            "name" :"class01",
+            "attributes": [
+                "id:integer",
+                "time:dateTime"
+            ]
+        },
+        {
+            "name" :"class02",
+            "attributes": [
+                "id:integer",
+                "name:string"
+            ]
+        },
+        {
+            "name" :"class03",
+            "attributes": [
+                "id:integer",
+                "name:string"
+            ]
+        }
+    ],
+    "connections": [
+        "class01--class02",
+        "class02--class03",
+        "class03--class01"
+    ]
+}
