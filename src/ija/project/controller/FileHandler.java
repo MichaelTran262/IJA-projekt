@@ -88,5 +88,4 @@ public class FileHandler {
         }
         return newPane.getChildren();
     }
-
 }

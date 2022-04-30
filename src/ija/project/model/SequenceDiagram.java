@@ -49,3 +49,4 @@ public class SequenceDiagram extends Element{
         return null;
     }
 }
+

@@ -16,3 +16,4 @@ public class UMLConnection extends Element{
         this.type = type;
     }
 }
+

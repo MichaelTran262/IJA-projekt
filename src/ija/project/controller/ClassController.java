@@ -294,6 +294,7 @@ public class ClassController {
         } else {
             System.out.println("Not a valid file");
         }
+
     }
 
     @FXML
