@@ -8,14 +8,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.project.controller.ClassController">
+<AnchorPane fx:id="classDiagramWindow" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.project.controller.ClassController">
    <children>
       <MenuBar layoutX="-136.0" prefHeight="27.0" prefWidth="736.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
                   <MenuItem fx:id="loadFileItem" mnemonicParsing="false" onAction="#loadFile" text="Load" />
-                  <MenuItem fx:id="saveFileItem" mnemonicParsing="false" text="Save" />
+                  <MenuItem fx:id="saveFileItem" mnemonicParsing="false" onAction="#saveToFile" text="Save" />
                   <MenuItem mnemonicParsing="false" text="Close" />
             </items>
           </Menu>
@@ -39,5 +39,6 @@
       <Text fx:id="coordinatesText" layoutX="100.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="252.13000106811523" />
       <Text fx:id="boxCoordinates" layoutX="352.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="252.13000106811523" />
       <Text fx:id="textMode" layoutX="19.0" layoutY="528.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Mode: Select" wrappingWidth="59.0" />
+      <Button fx:id="classButton" layoutX="23.0" layoutY="473.0" mnemonicParsing="false" onAction="#switchToSequence" text="Switch" textAlignment="CENTER" />
    </children>
 </AnchorPane>

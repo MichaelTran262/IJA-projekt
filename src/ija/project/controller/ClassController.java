@@ -1,12 +1,18 @@
 package ija.project.controller;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import ija.project.model.ClassDiagram;
 import ija.project.model.UMLAttribute;
 import ija.project.model.UMLClass;
+import ija.project.view.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
@@ -22,6 +28,8 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * @author      Lukáš Fuis      <xfuisl00 @ stud.fit.vutbr.cz>
@@ -39,28 +47,33 @@ public class ClassController {
     public Text coordinatesText;
     public Text boxCoordinates;
     public Text textMode;
-    public TextField formNameField;
-    public TextField formTypeField;
     public MenuItem saveFileItem;
     public MenuItem loadFileItem;
+    public AnchorPane classDiagramWindow;
+    public Button sequenceButton;
+    public Button classButton;
+    public Button addButton;
+
 
     private enum Mode{
         select, connect, delete;
     }
     @FXML
+    private static String activeScene;
     private Mode mouseMode = Mode.select;
-    private Stage stage;
-    private Scene scene;
-    private Parent root;
+    private static Scene classScene;
+    private static Scene sequenceScene;
     @FXML
     private AnchorPane anchorPane;
-    private ArrayList<ClassBox> seznam = new ArrayList<ClassBox>();
-    private ArrayList<Line> connections = new ArrayList<Line>();
-    private ClassDiagram diagram = new ClassDiagram("Diagram");
+    private static ArrayList<ClassBox> seznam = new ArrayList<ClassBox>();
+    private static ArrayList<Connection> connections = new ArrayList<Connection>();
+    private static final ClassDiagram diagram = new ClassDiagram("Diagram");
     private int number = 1;
     private ClassBox selected = null;
-    private FileHandler fileHandler = new FileHandler(null);
+    private static FileHandler fileHandler = new FileHandler(null);
 
+    private double x = 0;
+    private double y = 0;
     private static class Position {
         double x;
         double y;
@@ -247,16 +260,108 @@ public class ClassController {
     private void loadFile(ActionEvent event) {
         FileChooser fc = new FileChooser();
         File selectedFile = fc.showOpenDialog(null);
-
+        System.out.println("Jdu změnit hodnoty\n");
+        selected = null;
+        mouseMode = Mode.select;
+        deleteButton.setSelected(false);
+        selectButton.setSelected(true);
+        connectButton.setSelected(false);
+        System.out.println("Hodnoty změněny\n");
+        x = 20;
+        y = 10;
         if (selectedFile != null) {
             seznam.clear();
             connections.clear();
             anchorPane.getChildren().clear();
             fileHandler.setFile(selectedFile);
             anchorPane.getChildren().addAll(fileHandler.parseFile());
+            for(Node node: anchorPane.getChildren()) {
+                if(node instanceof ClassBox){
+                    draggable(node);
+                    connectable(node);
+                    node.relocate(x, y);
+                    x += 200;
+                    y += 10;
+                    seznam.add((ClassBox)node);
+                } else if (node instanceof Connection) {
+                    node.toBack();
+                    connections.add((Connection)node);
+                }
+            }
         } else {
             System.out.println("Not a valid file");
         }
-        
+    }
+    @FXML
+    private void saveToFile(ActionEvent event) {
+        FileChooser fc = new FileChooser();
+        File file = fc.showSaveDialog(new Stage());
+        if(file != null) {
+            JSONObject json = new JSONObject();
+            JSONArray classes = new JSONArray();
+            for (ClassBox cl : seznam) {
+                JSONObject tmp = new JSONObject();
+                tmp.put("name", cl.getClassName());
+                List<UMLAttribute> attributes = cl.getClassAttributes();
+                JSONArray jsonAttributeArray = new JSONArray();
+                for (UMLAttribute attr : attributes) {
+                    jsonAttributeArray.put(attr.getName());
+                }
+                tmp.put("attributes", jsonAttributeArray);
+                classes.put(tmp);
+            }
+            json.put("classes", classes);
+            JSONArray jsonConnections = new JSONArray();
+            for (Connection conn : connections) {
+                String connectionString = conn.getStart().getClassName() + "--" + conn.getEnd().getClassName();
+                jsonConnections.put(connectionString);
+            }
+            json.put("connections", jsonConnections);
+            String toFileString = json.toString();
+            System.out.println(toFileString);
+            try {
+                PrintWriter printWriter = new PrintWriter(file);
+                printWriter.write(toFileString);
+                printWriter.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();;
+            }
+        }
+    }
+    public void switchToSequence(ActionEvent event) throws IOException {
+        System.out.println("Switch scene\n");
+        Scene currScene = ((Node) event.getSource()).getScene();
+        Stage thisStage = (Stage) currScene.getWindow();
+        System.out.println(activeScene + "\n");
+        if(sequenceScene == null) {
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Sequence.fxml"));
+            sequenceScene = new Scene(root);
+            String css = this.getClass().getClassLoader().getResource("application.css").toExternalForm();
+            sequenceScene.getStylesheets().add(css);
+        }
+        classScene = currScene;
+        System.out.println("changing scene\n");
+        thisStage.setScene(sequenceScene);
+        activeScene = "Sequence";
+        System.out.println("Current screen is: " + activeScene + "\n");
+    }
+
+    
+    public void switchToClass(ActionEvent event) throws IOException {
+        System.out.println("Switch scene\n");
+        Scene currScene = ((Node) event.getSource()).getScene();
+        Stage thisStage = (Stage) currScene.getWindow();
+        System.out.println(activeScene + "\n");
+        if(classScene == null) {
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Main.fxml"));
+            classScene = new Scene(root);
+            String css = this.getClass().getClassLoader().getResource("application.css").toExternalForm();
+            classScene.getStylesheets().add(css);
+        }
+        sequenceScene = currScene;
+        System.out.println("changing scene\n");
+        thisStage.setScene(classScene);
+        activeScene = "Class";
+        System.out.println("Current screen is: " + activeScene + "\n");
     }
 }

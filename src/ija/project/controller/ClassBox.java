@@ -15,6 +15,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -131,6 +132,9 @@ public class ClassBox extends StackPane {
         update();
     }
 
+    public List<UMLAttribute> getClassAttributes() {
+        return this.cl.getAttributes();
+    }
     /**
      * Funkce změní jméno atributu (zatím nefunkční)
      * @param name jméno atributu, která bude změnena v instanci UML třídy
