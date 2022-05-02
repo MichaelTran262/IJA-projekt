@@ -23,7 +23,7 @@ public class FileHandler {
 
     private File file;
     ArrayList<ClassBox> classesList = new ArrayList<ClassBox>();
-    ArrayList<Line> lineList = new ArrayList<Line>();
+    ArrayList<Connection> lineList = new ArrayList<Connection>();
     AnchorPane newPane = new AnchorPane();
 
     public FileHandler(File file) {

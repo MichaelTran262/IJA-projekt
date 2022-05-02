@@ -1,8 +1,11 @@
 package ija.project.controller;
 
 import ija.project.controller.ClassBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 
 /**
  * @author      Thanh Q. Tran     <xtrant02 @ stud.fit.vutbr.cz>
@@ -16,9 +19,8 @@ import javafx.scene.shape.Line;
 public class Connection extends Line {
     private ClassBox start;
     private ClassBox end;
-
     /**
-     * Konstruktor třidy ClassBox, nastavuje vlastnosti GUI komponentů
+     * Konstruktor třidy Connection
      * @param start instance Classbox, odkud vazba začíná
      * @param end instance Classbox, kde vazba končí
      */

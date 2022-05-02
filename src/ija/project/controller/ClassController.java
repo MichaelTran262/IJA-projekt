@@ -229,14 +229,18 @@ public class ClassController {
                     break;
                 case connect:
                     if (selected == null) {
-                        System.out.println("Connection select 1");
+                        //System.out.println("Connection select 1");
                         selected = (ClassBox)event.getSource();
                         selected.setStyle("-fx-border-color: green");
                     } else {
-                        System.out.println("Connection select 2");
+                        //System.out.println("Connection select 2");
                         ClassBox start = selected;
                         ClassBox end = (ClassBox)event.getSource();
                         Connection connect = new Connection(start, end);
+                        // Podmínka, že nemusí být šipka
+                        if(true){
+                            Arrow arrow = new Arrow(connect, end);
+                        }
                         anchorPane.getChildren().add(connect);
                         start.appendConnection(connect);
                         end.appendConnection(connect);
