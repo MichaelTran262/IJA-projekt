@@ -50,6 +50,7 @@
                 <include name="Sequence.fxml"/>
                 <include name="addAttributeWindow.fxml"/>
                 <include name="application.css"/>
+                <include name="images/**"/>
             </fileset>
         </jar>
     </target>

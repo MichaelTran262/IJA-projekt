@@ -160,4 +160,8 @@ public class ClassBox extends StackPane {
     public String getClassName(){
         return this.cl.getName();
     }
+
+    public Rectangle getRectangle() {
+        return rectangle;
+    }
 }

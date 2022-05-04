@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -154,6 +155,7 @@ public class ClassController {
                 } else {
                     node.relocate(new_x, new_y);
                 }
+
             }
         });
     }
@@ -238,15 +240,14 @@ public class ClassController {
                         ClassBox start = selected;
                         ClassBox end = (ClassBox)event.getSource();
                         Connection connect = new Connection(start, end);
-                        // Podmínka, že nemusí být šipka
-                        if(true){
-                            Arrow arrow = new Arrow(connect, end);
-                        }
+                        //draggable(connect.getArrowHead());
                         anchorPane.getChildren().add(connect);
+                        // šipka
+                        anchorPane.getChildren().add(connect.getArrowHead());
                         start.appendConnection(connect);
                         end.appendConnection(connect);
-                        start.toFront();
-                        end.toFront();
+                        //start.toFront();
+                        //end.toFront();
                         connections.add(connect);
                         connectButton.setSelected(false);
                         selectButton.setSelected(true);

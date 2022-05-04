@@ -5,10 +5,13 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="classDiagramWindow" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.project.controller.ClassController">
+<AnchorPane fx:id="classDiagramWindow" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.project.controller.ClassController">
    <children>
       <MenuBar layoutX="-136.0" prefHeight="27.0" prefWidth="736.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <menus>
@@ -31,10 +34,34 @@
           </Menu>
         </menus>
       </MenuBar>
-      <ToggleButton fx:id="connectButton" layoutX="14.0" layoutY="115.0" mnemonicParsing="false" onAction="#changeToConnect" prefHeight="26.0" prefWidth="69.0" text="Connect" />
-      <ToggleButton fx:id="deleteButton" layoutX="14.0" layoutY="201.0" mnemonicParsing="false" onAction="#changeToDelete" prefHeight="26.0" prefWidth="69.0" text="Delete" />
-      <ToggleButton fx:id="selectButton" layoutX="14.0" layoutY="71.0" mnemonicParsing="false" onAction="#changeToSelect" prefHeight="26.0" prefWidth="69.0" selected="true" text="Select" />
-      <Button fx:id="addButton" layoutX="14.0" layoutY="156.0" mnemonicParsing="false" onAction="#addClass" prefHeight="26.0" prefWidth="69.0" text="Add" />
+      <ToggleButton fx:id="connectButton" layoutX="19.0" layoutY="120.0" mnemonicParsing="false" onAction="#changeToConnect" prefHeight="50.0" prefWidth="50.0">
+         <graphic>
+            <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/linepointer.png" />
+               </image>
+            </ImageView>
+         </graphic></ToggleButton>
+      <ToggleButton fx:id="deleteButton" layoutX="20.0" layoutY="236.0" mnemonicParsing="false" onAction="#changeToDelete" prefHeight="50.0" prefWidth="50.0">
+         <graphic>
+            <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/delete.png" />
+               </image>
+            </ImageView>
+         </graphic></ToggleButton>
+      <ToggleButton fx:id="selectButton" layoutX="18.0" layoutY="65.0" mnemonicParsing="false" onAction="#changeToSelect" prefHeight="46.0" prefWidth="59.0" selected="true">
+         <graphic>
+            <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/pointer.png" />
+               </image>
+            </ImageView>
+         </graphic></ToggleButton>
+      <Button fx:id="addButton" layoutX="19.0" layoutY="178.0" mnemonicParsing="false" onAction="#addClass" prefHeight="50.0" prefWidth="58.0" text="+" textAlignment="CENTER">
+         <font>
+            <Font size="23.0" />
+         </font></Button>
       <AnchorPane fx:id="anchorPane" layoutX="96.0" layoutY="58.0" maxHeight="720.0" maxWidth="1280.0" onMouseDragged="#setCoordinatesText" onMouseMoved="#setCoordinatesText" prefHeight="520.0" prefWidth="690.0" AnchorPane.topAnchor="58.0" />
       <Text fx:id="coordinatesText" layoutX="100.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="252.13000106811523" />
       <Text fx:id="boxCoordinates" layoutX="352.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="252.13000106811523" />
