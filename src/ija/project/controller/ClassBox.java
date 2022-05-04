@@ -92,7 +92,6 @@ public class ClassBox extends StackPane {
      * @param node komponenta, do které se přidá contextMenu
      */
     public void setContextMenu(TextField tf){
-        System.out.println("RIGHT CLICK setContext");
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem1 = new MenuItem("Přidat atribut");
         menuItem1.setOnAction(actionEvent -> {
@@ -128,7 +127,6 @@ public class ClassBox extends StackPane {
     public void removeClassAttribute(String name) {
         this.cl.removeAttribute(name);
         this.getChildren().clear();
-        System.out.println(cl.getAttributes().toString());
         update();
     }
 
@@ -150,7 +148,6 @@ public class ClassBox extends StackPane {
             attributes.add(attrText);
             attrText.setId("Textfield " + 1+attributes.size());
             setContextMenu(attrText);
-            System.out.println(rectangle.getWidth() + " TExtfield width" +attrText.getMaxWidth());
             posY += 27;
         }
         rectangle.toBack();
@@ -158,7 +155,6 @@ public class ClassBox extends StackPane {
         for (TextField attr : attributes) {
             this.getChildren().add(attr);
         }
-        System.out.println(this.getHeight());
     }
 
     public String getClassName(){

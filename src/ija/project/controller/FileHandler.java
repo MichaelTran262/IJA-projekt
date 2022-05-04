@@ -1,7 +1,6 @@
 package ija.project.controller;
 
-import ija.project.model.ClassDiagram;
-import ija.project.model.UMLAttribute;
+import ija.project.model.*;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
@@ -12,9 +11,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 
-import ija.project.model.UMLClass;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -87,5 +86,53 @@ public class FileHandler {
             System.out.println("Error at line 48");
         }
         return newPane.getChildren();
+    }
+
+
+    public List<SequenceDiagram> parseSequence() {
+
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
+            JSONObject json = new JSONObject(content);
+            // Parse sequence
+            JSONArray sequence = json.getJSONArray("sequence");
+            List<SequenceDiagram> diagrams = new ArrayList<SequenceDiagram>();
+            for (int i = 0; i < sequence.length(); i++) {
+                String diagramName = sequence.getJSONObject(i).getString("name");
+                SequenceDiagram diagram = new SequenceDiagram(diagramName);
+                JSONArray tridy = sequence.getJSONObject(i).getJSONArray("classes");
+                for (int j = 0; j < tridy.length(); j++) {
+                    JSONObject currClass = tridy.getJSONObject(j);
+                    JSONArray currStart = currClass.getJSONArray("start");
+                    JSONArray currEnd = currClass.getJSONArray("end");
+                    if (currStart.length() != currEnd.length())
+                        break;
+                    String classname = currClass.getString("name");
+                    UMLClass cl = diagram.createClass(classname);
+                    ArrayList<Integer> start = new ArrayList<Integer>();
+                    ArrayList<Integer> end = new ArrayList<Integer>();
+                    for (int k = 0; k < currStart.length(); k++) {
+                        start.add(currStart.getInt(k));
+                        end.add(currEnd.getInt(k));
+                    }
+                    cl.setActiveFrom(start);
+                    cl.setActiveTo(end);
+                }
+                JSONArray operace = sequence.getJSONObject(i).getJSONArray("operations");
+                for (int j = 0; j < operace.length(); j++) {
+                    JSONObject currOp = operace.getJSONObject(j);
+                    String from = currOp.getString("from");
+                    String to = currOp.getString("to");
+                    int typ = currOp.getInt("type");
+                    String name = currOp.getString("name");
+                    diagram.createConnection(name, from, to, typ);
+                }
+                diagrams.add(diagram);
+            }
+            return diagrams;
+        } catch (Exception e) {
+            System.out.println("Chyba při načítání seq diagramu " + e.toString() + "\n");
+            return null;
+        }
     }
 }

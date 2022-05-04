@@ -1,9 +1,6 @@
 package ija.project.model;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Třída (její instance) reprezentuje model třídy z jazyka UML.
@@ -14,6 +11,25 @@ import java.util.List;
 public class UMLClass extends UMLClassifier {
     private boolean isAbstract;
     private final List<UMLAttribute> attributeList;
+    private ArrayList<Integer> activeFrom;
+    private ArrayList<Integer> activeTo;
+
+    public ArrayList<Integer> getActiveTo() {
+        return activeTo;
+    }
+
+    public void setActiveTo(ArrayList<Integer> activeTo) {
+        this.activeTo = activeTo;
+    }
+
+    public ArrayList<Integer> getActiveFrom() {
+        return activeFrom;
+    }
+
+    public void setActiveFrom(ArrayList<Integer> activeFrom) {
+        this.activeFrom = activeFrom;
+    }
+
 
     /**
      * Vytvoří instanci reprezentující model třídy z jazyka UML.

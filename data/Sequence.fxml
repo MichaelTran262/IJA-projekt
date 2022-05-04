@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="classDiagramWindow" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.project.controller.ClassController">
+<AnchorPane fx:id="sequenceDiagramWindow" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.project.controller.ClassController">
     <children>
         <MenuBar layoutX="-136.0" prefHeight="27.0" prefWidth="736.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <menus>
@@ -32,17 +33,21 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <ToggleButton fx:id="connectButton" layoutX="14.0" layoutY="115.0" mnemonicParsing="false" onAction="#changeToConnect" prefHeight="26.0" prefWidth="69.0" text="Connect" />
-        <ToggleButton fx:id="deleteButton" layoutX="14.0" layoutY="201.0" mnemonicParsing="false" onAction="#changeToDelete" prefHeight="26.0" prefWidth="69.0" text="Delete" />
-        <ToggleButton fx:id="selectButton" layoutX="14.0" layoutY="71.0" mnemonicParsing="false" onAction="#changeToSelect" prefHeight="26.0" prefWidth="69.0" selected="true" text="Select" />
-        <Button fx:id="addButton" layoutX="14.0" layoutY="156.0" mnemonicParsing="false" onAction="#addClass" prefHeight="26.0" prefWidth="69.0" text="Add" />
-        <AnchorPane fx:id="anchorPane" layoutX="96.0" layoutY="58.0" maxHeight="720.0" maxWidth="1280.0" onMouseDragged="#setCoordinatesText" onMouseMoved="#setCoordinatesText" prefHeight="520.0" prefWidth="690.0" AnchorPane.topAnchor="58.0">
+        <AnchorPane fx:id="sequenceAnchorPane" layoutX="96.0" layoutY="58.0" maxHeight="720.0" maxWidth="1280.0" onMouseDragged="#setCoordinatesText" onMouseMoved="#setCoordinatesText" prefHeight="520.0" prefWidth="690.0" AnchorPane.topAnchor="58.0">
          <children>
-            <Circle fill="DODGERBLUE" layoutX="345.0" layoutY="241.0" radius="100.0" stroke="BLACK" strokeType="INSIDE" />
+            <Label fx:id="nameOfDiagram" layoutX="238.0" layoutY="14.0" text="Press button Show">
+               <font>
+                  <Font size="26.0" />
+               </font>
+            </Label>
          </children></AnchorPane>
+        <ToggleButton fx:id="deleteButton" layoutX="14.0" layoutY="201.0" mnemonicParsing="false" onAction="#changeToDelete" prefHeight="26.0" prefWidth="69.0" text="Delete" />
+        <Button fx:id="addButton" layoutX="14.0" layoutY="156.0" mnemonicParsing="false" onAction="#sequenceAddClass" prefHeight="26.0" prefWidth="69.0" text="Add" />
         <Text fx:id="coordinatesText" layoutX="100.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="252.13000106811523" />
         <Text fx:id="boxCoordinates" layoutX="352.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="252.13000106811523" />
-        <Text fx:id="textMode" layoutX="19.0" layoutY="528.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Mode: Select" wrappingWidth="59.0" />
         <Button fx:id="sequenceButton" layoutX="23.0" layoutY="473.0" mnemonicParsing="false" onAction="#switchToClass" text="Switch" textAlignment="CENTER" />
+      <Button layoutX="23.0" layoutY="369.0" mnemonicParsing="false" onAction="#nextDiagram" text="Next" />
+      <Button layoutX="24.0" layoutY="401.0" mnemonicParsing="false" onAction="#previousDiagram" text="Prev" />
+      <Button fx:id="showButton" layoutX="21.0" layoutY="333.0" mnemonicParsing="false" onAction="#setSequencePanes" text="Show" />
     </children>
 </AnchorPane>

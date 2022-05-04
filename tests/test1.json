@@ -1,14 +1,14 @@
 {
     "classes": [
         {
-            "name" :"class01",
+            "name": "class01",
             "attributes": [
                 "id:integer",
                 "time:dateTime"
             ]
         },
         {
-            "name" :"class02",
+            "name": "class02",
             "attributes": [
                 "id:integer",
                 "name:string"
@@ -17,5 +17,56 @@
     ],
     "connections": [
         "class01--class02"
+    ],
+    "sequence": [
+        {
+            "name": "Diagram1",
+            "classes": [
+                {
+                    "name": "class01",
+                    "start": [
+                        1
+                    ],
+                    "end": [
+                        4
+                    ]
+                },
+                {
+                    "name": "class02",
+                    "start": [
+                        2
+                    ],
+                    "end": [
+                        3
+                    ]
+                }
+            ],
+            "operations": [
+                {
+                    "from": "actor",
+                    "to": "class01",
+                    "type": 1,
+                    "name": "Send message"
+                },
+                {
+                    "from": "class01",
+                    "to": "class02",
+                    "type": 1,
+                    "name": "method()"
+                },
+                {
+                    "from": "class02",
+                    "to": "class01",
+                    "type": 2,
+                    "name": "return"
+                },
+                {
+                    "from": "class01",
+                    "to": "actor",
+                    "type": 2,
+                    "name": "response"
+                }
+            ]
+        }
     ]
 }

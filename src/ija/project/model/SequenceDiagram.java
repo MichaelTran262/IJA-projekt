@@ -1,10 +1,10 @@
 package ija.project.model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class SequenceDiagram extends Element{
-    private ClassDiagram diagram;
     private List<UMLClass> classList = new LinkedList<UMLClass>();
     private List<UMLConnection> connectionList = new LinkedList<UMLConnection>();
 
@@ -13,14 +13,11 @@ public class SequenceDiagram extends Element{
      *
      * @param name Název elementu.
      */
-    public SequenceDiagram(String name, ClassDiagram diagram) {
+    public SequenceDiagram(String name) {
         super(name);
-        this.diagram = diagram;
     }
 
     public UMLClass createClass(String name){
-        if(diagram.getClassByName(name) == null)
-            return null;
         for (UMLClass cl:classList) {
             if(name.equals(cl.getName()))
                 return null;
@@ -31,11 +28,7 @@ public class SequenceDiagram extends Element{
     }
 
     public UMLConnection createConnection(String name, String from, String to, int type){
-        UMLClass fromCLass = this.getClassByName(from);
-        UMLClass toClass = this.getClassByName(to);
-        if(fromCLass == null || toClass == null)
-            return  null;
-        UMLConnection newConnection = new UMLConnection(name, fromCLass,toClass,type);
+        UMLConnection newConnection = new UMLConnection(name, from,to,type);
         connectionList.add(newConnection);
         return newConnection;
     }
@@ -47,6 +40,26 @@ public class SequenceDiagram extends Element{
             }
         }
         return null;
+    }
+
+    public int getOrder(String name){
+        int i = 1;
+        for(UMLClass cl : classList){
+            if(name.equals(cl.getName())){
+                return i;
+            }
+            i++;
+        }
+        return 0;
+    }
+
+
+    public List<UMLClass> getClasses(){
+        return classList;
+    }
+
+    public List<UMLConnection> getConnections(){
+        return connectionList;
     }
 }
 
