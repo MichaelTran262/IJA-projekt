@@ -78,5 +78,13 @@ public class ClassDiagram extends Element{
         }
         return null;
     }
+
+    /**
+     * Funkce vrátí seznam svých tříd
+     * @return Seznam tříd
+     */
+    public List<UMLClass> getClassesList() {
+        return classesList;
+    }
 }
 

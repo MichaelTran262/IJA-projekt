@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SequenceDiagram extends Element{
+    private ClassDiagram diagram;
     private List<UMLClass> classList = new LinkedList<UMLClass>();
     private List<UMLConnection> connectionList = new LinkedList<UMLConnection>();
 
@@ -13,16 +14,20 @@ public class SequenceDiagram extends Element{
      *
      * @param name Název elementu.
      */
-    public SequenceDiagram(String name) {
+    public SequenceDiagram(String name, ClassDiagram diagram) {
         super(name);
+        this.diagram = diagram;
     }
 
     public UMLClass createClass(String name){
-        for (UMLClass cl:classList) {
-            if(name.equals(cl.getName()))
-                return null;
+        UMLClass newClass = diagram.getClassByName(name);
+        if(newClass == null){
+            for (UMLClass cl:classList) {
+                if(name.equals(cl.getName()))
+                    return null;
+            }
+            newClass = new UMLClass(name);
         }
-        UMLClass newClass = new UMLClass(name);
         classList.add(newClass);
         return newClass;
     }

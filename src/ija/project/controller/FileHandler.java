@@ -21,7 +21,7 @@ import org.json.JSONObject;
 public class FileHandler {
 
     private File file;
-    ArrayList<ClassBox> classesList = new ArrayList<ClassBox>();
+    //ArrayList<ClassBox> classesList = new ArrayList<ClassBox>();
     ArrayList<Connection> lineList = new ArrayList<Connection>();
     AnchorPane newPane = new AnchorPane();
 
@@ -41,8 +41,9 @@ public class FileHandler {
     /**
      * Funkce zparsuje soubor a vrátí třídy
      */
-    public ObservableList<Node> parseFile() {
-
+    public ClassDiagram parseClassDiagram() {
+        
+        ClassDiagram newDiagram = new ClassDiagram("Diagram " + file.getName());
         try {
             String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
             JSONObject json = new JSONObject(content);
@@ -51,17 +52,24 @@ public class FileHandler {
             for(int i = 0; i < classes.length(); i++) {
                 String classname = classes.getJSONObject(i).getString("name");
                 JSONArray attributes = classes.getJSONObject(i).getJSONArray("attributes");
-                UMLClass cl = new UMLClass(classname);
+                UMLClass cl = newDiagram.createClass(classname);
                 //Adding attributes
-                ClassBox box = new ClassBox(cl);
                 for(int j = 0; j < attributes.length(); j++) {
-                    //System.out.println(attributes.getString(j))
-                    box.addClassAttribute(attributes.getString(j));
+                    UMLAttribute attr = new UMLAttribute(attributes.getString(j));
+                    cl.addAttribute(attr);
                 }
-                box.toFront();
-                classesList.add(box);
             }
-            newPane.getChildren().addAll(classesList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            //System.out.println("Can't parse JSON on classes");
+        }
+        return newDiagram;
+    }
+
+    public ArrayList<Connection> parseConnections(List<ClassBox> classesList) {
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
+            JSONObject json = new JSONObject(content);
             // parse connections
             JSONArray lines = json.getJSONArray("connections");
             for(int i = 0; i < lines.length(); i++) {
@@ -81,15 +89,14 @@ public class FileHandler {
                 conn.toBack();
                 lineList.add(conn);
             }
-            newPane.getChildren().addAll(lineList);
         } catch (Exception e) {
-            System.out.println("Error at line 48");
+            System.out.println("Can't parse JSON on connections");
         }
-        return newPane.getChildren();
+        return lineList;
     }
 
 
-    public List<SequenceDiagram> parseSequence() {
+    public List<SequenceDiagram> parseSequence(ClassDiagram classDiagram) {
 
         try {
             String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
@@ -99,7 +106,7 @@ public class FileHandler {
             List<SequenceDiagram> diagrams = new ArrayList<SequenceDiagram>();
             for (int i = 0; i < sequence.length(); i++) {
                 String diagramName = sequence.getJSONObject(i).getString("name");
-                SequenceDiagram diagram = new SequenceDiagram(diagramName);
+                SequenceDiagram diagram = new SequenceDiagram(diagramName, classDiagram);
                 JSONArray tridy = sequence.getJSONObject(i).getJSONArray("classes");
                 for (int j = 0; j < tridy.length(); j++) {
                     JSONObject currClass = tridy.getJSONObject(j);

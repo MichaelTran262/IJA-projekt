@@ -44,10 +44,13 @@ public class ClassBox extends StackPane {
         rectangle.setStyle("-fx-fill: #ffffff; -fx-stroke: #000000; -fx-border-color: #000000; -fx-stroke-width: 1;");
         this.setId(cl.getName());
         classTitle = new TextField(this.getId());
-
         classTitle.setTranslateY(-50);
         classTitle.setFont(Font.font("Verdana", FontWeight.BOLD,11));
         classTitle.setMaxWidth(rectangle.getWidth()-2);
+        classTitle.textProperty().addListener((observable, oldValue, newValue) -> {
+            cl.setName(newValue);
+            System.out.println("Title changed from " + oldValue + " to " + cl.getName());
+        });
         update();
         this.setContextMenu(this);
     }
@@ -145,6 +148,10 @@ public class ClassBox extends StackPane {
             TextField attrText = new TextField(attr.toString());
             attrText.setTranslateY(posY);
             attrText.setMaxWidth(rectangle.getWidth() - 10);
+            attrText.textProperty().addListener((observableValue, oldValue, newValue) -> {
+                attr.setName(newValue);
+                System.out.println("textfield changed from " + oldValue + " to " + attr.getName());
+            });
             attributes.add(attrText);
             attrText.setId("Textfield " + 1+attributes.size());
             setContextMenu(attrText);

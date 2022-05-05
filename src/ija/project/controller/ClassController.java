@@ -76,7 +76,7 @@ public class ClassController {
     private AnchorPane anchorPane;
     private static ArrayList<ClassBox> seznam = new ArrayList<ClassBox>();
     private static ArrayList<Connection> connections = new ArrayList<Connection>();
-    private static final ClassDiagram diagram = new ClassDiagram("Diagram");
+    private static ClassDiagram diagram = new ClassDiagram("Diagram");
     private static List<SequenceDiagram> sequenceDiagrams;
     private int number = 1;
     private ClassBox selected = null;
@@ -287,30 +287,35 @@ public class ClassController {
                 connections.clear();
                 anchorPane.getChildren().clear();
                 fileHandler.setFile(selectedFile);
-                sequenceDiagrams = fileHandler.parseSequence();
-                anchorPane.getChildren().addAll(fileHandler.parseFile());
-                for (Node node : anchorPane.getChildren()) {
-                    if (node instanceof ClassBox) {
-                        draggable(node);
-                        connectable(node);
-                        node.relocate(x, y);
-                        x += 200;
-                        y += 10;
-                        seznam.add((ClassBox) node);
-                    } else if (node instanceof Connection) {
-                        node.toBack();
-                        connections.add((Connection) node);
-                    }
+                diagram = fileHandler.parseClassDiagram();
+                for (UMLClass cl : diagram.getClassesList()) {
+                    // Creating GUI
+                    ClassBox rectangle = new ClassBox(cl);
+                    draggable(rectangle);
+                    connectable(rectangle);
+                    seznam.add(rectangle);
+                    anchorPane.getChildren().add(rectangle);
+                    rectangle.toFront();
+                    rectangle.relocate(x, y);
+                    x += 200;
+                    y += 10;
                 }
+                for (Connection conn : fileHandler.parseConnections(seznam)){
+                    anchorPane.getChildren().add(conn);
+                    connections.add(conn);
+                    conn.toBack();
+                }
+                sequenceDiagrams = fileHandler.parseSequence(diagram);
             }
             catch (Exception e){
                 System.out.println("vadnej load " + e.toString() + "\n");
+                e.printStackTrace();
             }
         }
-             else{
+        else{
                 System.out.println("Not a valid file");
-            }
         }
+    }
 
     @FXML
     private void saveToFile(ActionEvent event) {
@@ -384,8 +389,6 @@ public class ClassController {
     }
 
     public void setSequencePanes(){
-            sequenceDiagrams.add(new SequenceDiagram("pog"));
-            sequenceDiagrams.add(new SequenceDiagram("xd"));
             int i = 0;
             for (SequenceDiagram diagram:sequenceDiagrams) {
                 AnchorPane pane = new AnchorPane();

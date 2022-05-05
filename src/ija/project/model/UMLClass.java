@@ -103,6 +103,6 @@ public class UMLClass extends UMLClassifier {
      * Vrátí list atributů
      */
     public List<UMLAttribute> getAttributes() {
-        return Collections.unmodifiableList(attributeList);
+        return attributeList;
     }
 }
