@@ -86,5 +86,13 @@ public class ClassDiagram extends Element{
     public List<UMLClass> getClassesList() {
         return classesList;
     }
+
+    public void removeClass(UMLClass toRemove){
+        classesList.remove(toRemove);
+    }
+
+    public void addClass(UMLClass toAdd){
+        classesList.add(toAdd);
+    }
 }
 

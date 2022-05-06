@@ -34,6 +34,10 @@ public class ClassBox extends StackPane {
     private ArrayList<Connection> connections = new ArrayList<Connection>();
     private Rectangle rectangle = new Rectangle(100, 160, Color.WHITE);
 
+    public TextField getClassTitle() {
+        return classTitle;
+    }
+
     /**
      * Konstruktor třidy ClassBox, nastavuje vlastnosti GUI komponentů
      * @param cl Třída UML, která Classbox reprezentuje
@@ -62,6 +66,8 @@ public class ClassBox extends StackPane {
     public void appendConnection(Connection connection) {
         connections.add(connection);
     }
+
+    public void deleteConnection(Connection connection){ connections.remove(connection);}
 
     /**
      * Konstruktor třidy ClassBox, nastavuje vlastnosti GUI komponentů
@@ -144,6 +150,7 @@ public class ClassBox extends StackPane {
     public void update(){
         int posY = -20;
         attributes.clear();
+        this.getChildren().clear();
         for ( UMLAttribute attr : cl.getAttributes()) {
             TextField attrText = new TextField(attr.toString());
             attrText.setTranslateY(posY);
@@ -166,6 +173,10 @@ public class ClassBox extends StackPane {
 
     public String getClassName(){
         return this.cl.getName();
+    }
+
+    public UMLClass getUMLClass(){
+        return this.cl;
     }
 
     public Rectangle getRectangle() {

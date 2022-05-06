@@ -6,16 +6,19 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Stack;
 
 import ija.project.model.*;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -23,7 +26,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -48,8 +50,6 @@ public class ClassController {
     public Text coordinatesText;
     public Text boxCoordinates;
     public Text textMode;
-    public TextField formNameField;
-    public TextField formTypeField;
     public MenuItem saveFileItem;
     public MenuItem loadFileItem;
     public AnchorPane classDiagramWindow;
@@ -60,11 +60,14 @@ public class ClassController {
     public AnchorPane sequenceAnchorPane;
     public Label nameOfDiagram;
     public Button showButton;
+    public static Button undoButton;
+    public Button redoButton;
     private int currentPane = -1;
+    private ArrayList<Integer> numberOfObjects = new ArrayList<Integer>();
 
 
     private enum Mode{
-        select, connect, delete;
+        select, connect, delete
     }
     @FXML
     private static String activeScene;
@@ -89,24 +92,246 @@ public class ClassController {
         double y;
     }
 
+    private static Stack<Action> history = new Stack<>();
+    private static Stack<Action> undoHistory = new Stack<>();
+
+    interface Action{
+        void run();
+        void undo();
+        void redo();
+    }
+
+    class AddClass implements Action{
+        AnchorPane root;
+        ClassDiagram clsDiagram;
+        ArrayList<ClassBox> clsList;
+
+        ClassBox add;
+
+        public AddClass(AnchorPane root, ClassDiagram clsDiagram, ArrayList<ClassBox> clsList) {
+            this.root = root;
+            this.clsDiagram = clsDiagram;
+            this.clsList = clsList;
+        }
+
+        @Override
+        public void run() {
+            UMLClass clsAdd = diagram.createClass("Title " + number);
+            clsAdd.addAttribute(new UMLAttribute("jméno"));
+            clsAdd.addAttribute(new UMLAttribute("mail"));
+            // Creating GUI
+            add = new ClassBox(clsAdd);
+            TextField textField = add.getClassTitle();
+            draggable(add);
+            connectable(add);
+            add.toFront();
+            add.relocate(120*number, 10*number);
+            anchorPane.getChildren().add(add);
+            seznam.add(add);
+            number++;
+        }
+
+        @Override
+        public void undo() {
+            root.getChildren().remove(add);
+            clsDiagram.removeClass(add.getUMLClass());
+            number--;
+        }
+
+        @Override
+        public void redo() {
+            root.getChildren().add(add);
+            clsDiagram.addClass(add.getUMLClass());
+            number++;
+        }
+    }
+
+    class DeleteClass implements Action{
+        AnchorPane root;
+        ClassDiagram clsDiagram;
+        ArrayList<ClassBox> clsList;
+        ArrayList<Connection> conList;
+        ClassBox remove;
+
+        UMLClass clsAdd;
+
+        public DeleteClass(AnchorPane root, ClassDiagram clsDiagram, ArrayList<ClassBox> clsList, ArrayList<Connection> connections, ClassBox remove) {
+            this.root = root;
+            this.clsDiagram = clsDiagram;
+            this.clsList = clsList;
+            this.conList = connections;
+            this.remove = remove;
+        }
+
+        @Override
+        public void run() {
+            for(Connection conn : remove.getConnections()) {
+                root.getChildren().remove(conn.getArrowHead());
+                root.getChildren().remove(conn);
+                conList.remove(conn);
+            }
+            diagram.removeClass(remove.getUMLClass());
+            root.getChildren().remove(remove);
+            clsList.remove(remove);
+        }
+
+        @Override
+        public void undo() {
+            for (Connection conn: remove.getConnections()) {
+                root.getChildren().add(conn.getArrowHead());
+                root.getChildren().add(conn);
+                conList.add(conn);
+            }
+            diagram.addClass(remove.getUMLClass());
+            root.getChildren().add(remove);
+            clsList.add(remove);
+        }
+
+        @Override
+        public void redo() {
+            for (Connection conn: remove.getConnections()) {
+                root.getChildren().add(conn.getArrowHead());
+                root.getChildren().remove(conn);
+                conList.remove(conn);
+            }
+            diagram.removeClass(remove.getUMLClass());
+            root.getChildren().remove(remove);
+            clsList.remove(remove);
+        }
+    }
+
+    class ConnectClasses implements Action{
+        AnchorPane root;
+        ArrayList<Connection> conList;
+        ClassBox from;
+        ClassBox to;
+
+        Connection connect;
+
+        public ConnectClasses(AnchorPane root,  ArrayList<Connection> conList, ClassBox from, ClassBox to) {
+            this.root = root;
+            this.conList = conList;
+            this.from = from;
+            this.to = to;
+        }
+
+        @Override
+        public void run(){
+            connect = new Connection(from, to);
+            root.getChildren().add(connect);
+            // šipka
+            root.getChildren().add(connect.getArrowHead());
+            from.appendConnection(connect);
+            to.appendConnection(connect);
+            from.toFront();
+            //to.toFront();
+            conList.add(connect);
+            connectButton.setSelected(false);
+            selectButton.setSelected(true);
+            selected.setStyle("-fx-border-style: none");
+            selected = null;
+        }
+
+        @Override
+        public void undo() {
+            from.deleteConnection(connect);
+            to.deleteConnection(connect);
+            root.getChildren().remove(connect);
+            root.getChildren().remove(connect.getArrowHead());
+            conList.remove(connect);
+        }
+
+        @Override
+        public void redo() {
+            from.appendConnection(connect);
+            to.appendConnection(connect);
+            root.getChildren().add(connect);
+            root.getChildren().add(connect.getArrowHead());
+            conList.add(connect);
+        }
+    }
+/*
+    class EditClass implements Action{
+        ClassBox box;
+        String valueNew;
+        String valueOld;
+
+        public EditClass(ClassBox box, KeyEvent event) {
+            System.out.println(box.getUMLClass().getName() + "\n");
+            this.box = box;
+            this.valueOld = box.getClassTitle().getText();
+            if(isWriteable(event.getCode()))
+                this.valueNew = valueOld + event.getCharacter();
+            else {
+                this.valueNew = valueOld;
+                if (event.getCode() == KeyCode.valueOf("BACK_SPACE")) {
+                    StringBuffer sb = new StringBuffer(valueNew);
+                    sb.deleteCharAt(sb.length()-1);
+                }
+            }
+        }
+
+        private boolean isWriteable(KeyCode code){
+            if(code.getName() == "SPACE")
+                return true;
+            return code.isDigitKey() || code.isLetterKey();
+        }
+
+        @Override
+        public void run() {
+            System.out.println("old = " + valueOld + "\n new = " + valueNew + "\n");
+            box.getUMLClass().setName(valueNew);
+            box.update();
+        }
+
+        @Override
+        public void undo() {
+            box.getUMLClass().setName(valueOld);
+            box.update();
+        }
+
+        @Override
+        public void redo() {
+            run();
+        }
+    }
+*/
+    private static void execute(Action action){
+        history.add(action);
+        action.run();
+        undoButton.setDisable(false);
+    }
+
+    @FXML
+    private void undo(){
+        Action undo = history.pop();
+        undo.undo();
+        undoHistory.add(undo);
+        redoButton.setDisable(false);
+        if(history.isEmpty())
+            undoButton.setDisable(true);
+    }
+
+    @FXML
+    private void redo(){
+        Action redo = undoHistory.pop();
+        redo.redo();
+        history.add(redo);
+        undoButton.setDisable(false);
+        if(undoHistory.isEmpty())
+            redoButton.setDisable(true);
+    }
+
     /**
      * Funkce přidá GUI instanci třídy Classbox do diagramu tříd
      */
-    public void addClass(ActionEvent event){
-        // Create class to model
-        UMLClass new_class = diagram.createClass("Title " + number++);
-        boolean made = (new_class.addAttribute(new UMLAttribute("jméno")));
-        made = (new_class.addAttribute(new UMLAttribute("mail")));
-        // Creating GUI
-        ClassBox rectangle = new ClassBox(new_class);
-        draggable(rectangle);
-        connectable(rectangle);
-        rectangle.toFront();
-        rectangle.relocate(x, y);
-        anchorPane.getChildren().add(rectangle);
-        x += 120;
-        y += 10;
-        seznam.add(rectangle);
+    public void addClass(){
+        try {
+            execute(new AddClass(anchorPane, diagram, seznam));
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+        }
     }
 
     /**
@@ -164,7 +389,7 @@ public class ClassController {
      * Funkce změní uživatelský mod na Select
      * @param event JavaFX ActionEvent
      */
-    public void changeToSelect(ActionEvent event){
+    public void changeToSelect(){
         textMode.setText("Mode:\n Select");
         selected = null;
         if(mouseMode == Mode.select){
@@ -179,13 +404,10 @@ public class ClassController {
      * Funkce změní uživatelský mod na Delete
      * @param event JavaFX ActionEvent
      */
-    public void changeToDelete(ActionEvent event){
+    public void changeToDelete(){
         textMode.setText("Mode:\n Delete");
         if(mouseMode == Mode.delete){
-            mouseMode = Mode.select;
-            textMode.setText("Mode:\n Select");
-            deleteButton.setSelected(false);
-            selectButton.setSelected(true);
+            changeToSelect();
         }
         else {
             mouseMode = Mode.delete;
@@ -198,13 +420,10 @@ public class ClassController {
      * Funkce změní uživatelský mod na Connect
      * @param event JavaFX ActionEvent
      */
-    public void changeToConnect(ActionEvent event){
+    public void changeToConnect(){
         textMode.setText("Mode:\n Connect");
         if(mouseMode == Mode.connect){
-            mouseMode = Mode.select;
-            textMode.setText("Mode:\n Select");
-            connectButton.setSelected(false);
-            selectButton.setSelected(true);
+            changeToSelect();
         }
         else {
             mouseMode = Mode.connect;
@@ -225,12 +444,7 @@ public class ClassController {
                     break;
                 case delete:
                     ClassBox to_remove = (ClassBox)event.getSource();
-                    for(Connection conn : to_remove.getConnections()) {
-                        anchorPane.getChildren().remove(conn);
-                    }
-                    anchorPane.getChildren().remove(node);
-                    seznam.remove(node.getId());
-
+                    execute(new DeleteClass(anchorPane, diagram, seznam, connections, to_remove));
                     break;
                 case connect:
                     if (selected == null) {
@@ -239,20 +453,7 @@ public class ClassController {
                     } else {
                         ClassBox start = selected;
                         ClassBox end = (ClassBox)event.getSource();
-                        Connection connect = new Connection(start, end);
-                        //draggable(connect.getArrowHead());
-                        anchorPane.getChildren().add(connect);
-                        // šipka
-                        anchorPane.getChildren().add(connect.getArrowHead());
-                        start.appendConnection(connect);
-                        end.appendConnection(connect);
-                        //start.toFront();
-                        //end.toFront();
-                        connections.add(connect);
-                        connectButton.setSelected(false);
-                        selectButton.setSelected(true);
-                        selected.setStyle("-fx-border-style: none");
-                        selected = null;
+                        execute(new ConnectClasses(anchorPane,connections,start,end));
                     }
             }
         });
@@ -268,7 +469,7 @@ public class ClassController {
     }
 
     @FXML
-    private void loadFile(ActionEvent event) throws IOException {
+    private void loadFile() throws IOException {
         FileChooser fc = new FileChooser();
         File selectedFile = fc.showOpenDialog(null);
         selected = null;
@@ -318,7 +519,7 @@ public class ClassController {
     }
 
     @FXML
-    private void saveToFile(ActionEvent event) {
+    private void saveToFile() {
         FileChooser fc = new FileChooser();
         File file = fc.showSaveDialog(new Stage());
         if(file != null) {
@@ -353,6 +554,7 @@ public class ClassController {
             }
         }
     }
+
     public void switchToSequence(ActionEvent event) throws IOException {
         Scene currScene = ((Node) event.getSource()).getScene();
         Stage thisStage = (Stage) currScene.getWindow();
@@ -366,7 +568,6 @@ public class ClassController {
         thisStage.setScene(sequenceScene);
         activeScene = "Sequence";
     }
-
 
     public void switchToClass(ActionEvent event) throws IOException {
         Scene currScene = ((Node) event.getSource()).getScene();
@@ -382,10 +583,16 @@ public class ClassController {
         activeScene = "Class";
     }
 
-    public void sequenceAddClass(ActionEvent event) {
-        Operation operace = new Operation(1,2,1,1, "Čus hnus");
-        Operation operace2 = new Operation(3,2,2,4, "ez");
-        sequenceAnchorPane.getChildren().addAll(operace, operace.getUp(), operace.getDown(), operace.getName(),operace2,operace2.getDown(),operace2.getUp(), operace2.getName());
+    public void sequenceAddClass() {/*TODO
+        UMLClass newClass = sequenceDiagrams.get(currentPane).createClass("new class");
+        int numberObjects = numberOfObjects.get(currentPane);
+        numberObjects++;
+        System.out.println(numberObjects);
+        sequencePanes.get(currentPane).getChildren().addAll(createObjects("xd",50+6*100));
+        Text actor = new Text(newClass.getName());
+        numberOfObjects.remove(currentPane);
+        numberOfObjects.add(currentPane,numberObjects);
+*/
     }
 
     public void setSequencePanes(){
@@ -404,8 +611,10 @@ public class ClassController {
                 int min = 1000;
                 int j = 1;
                 List<Rectangle> rectangles = new ArrayList<>();
+                int numberObjects = 0;
                 for (UMLClass cl:classes) {
-                    pane.getChildren().addAll(createObjects(cl.getName(),x+=100));
+                    numberObjects++;
+                    pane.getChildren().addAll(createObjects(cl.getName(),50+numberObjects*100));
                     ArrayList<Integer> from = cl.getActiveFrom();
                     ArrayList<Integer> to = cl.getActiveTo();
                     for(int l = 0; l<from.size();l++){
@@ -418,6 +627,7 @@ public class ClassController {
                     }
                     j++;
                 }
+                numberOfObjects.add(numberObjects);
                 pane.getChildren().addAll(createLines(max,classes.size()));
                 pane.getChildren().addAll(rectangles);
                 pane.getChildren().addAll(createActivity(0,min, max));
@@ -442,35 +652,37 @@ public class ClassController {
             showButton.setDisable(true);
     }
 
-    public void nextDiagram(ActionEvent e){
+    public void nextDiagram(){
         List<Node> clone = new ArrayList<>();
-        clone.addAll(sequenceAnchorPane.getChildren());
-        sequencePanes.get(currentPane).getChildren().clear();
-        sequencePanes.get(currentPane).getChildren().addAll(clone);
         if(sequencePanes.size() == 1)
             return;
         if(currentPane == sequencePanes.size()-1){
             currentPane = 0;
         }
-        else
+        else {
+            clone.addAll(sequenceAnchorPane.getChildren());
+            sequencePanes.get(currentPane).getChildren().clear();
+            sequencePanes.get(currentPane).getChildren().addAll(clone);
             currentPane++;
+        }
         sequenceAnchorPane.getChildren().clear();
         nameOfDiagram.setText(sequenceDiagrams.get(currentPane).getName());
         sequenceAnchorPane.getChildren().addAll(sequencePanes.get(currentPane).getChildrenUnmodifiable());
     }
 
-    public void previousDiagram(ActionEvent e){
+    public void previousDiagram(){
         List<Node> clone = new ArrayList<>();
-        clone.addAll(sequenceAnchorPane.getChildren());
-        sequencePanes.get(currentPane).getChildren().clear();
-        sequencePanes.get(currentPane).getChildren().addAll(clone);
         if(sequencePanes.size() == 1)
             return;
         if(currentPane == 0){
             currentPane = sequencePanes.size()-1;
         }
-        else
+        else {
+            clone.addAll(sequenceAnchorPane.getChildren());
+            sequencePanes.get(currentPane).getChildren().clear();
+            sequencePanes.get(currentPane).getChildren().addAll(clone);
             currentPane--;
+        }
         sequenceAnchorPane.getChildren().clear();
         nameOfDiagram.setText(sequenceDiagrams.get(currentPane).getName());
         sequenceAnchorPane.getChildren().addAll(sequencePanes.get(currentPane).getChildrenUnmodifiable());
@@ -535,13 +747,8 @@ public class ClassController {
     }
 
     public Rectangle createActivity(int poradi, int from, int to){
-        System.out.println("activity");
-        System.out.println(poradi);
-        System.out.println(from);
-        System.out.println(to);
         int X = 65+poradi*100;
         int Ye = 135+(from-1)*60;
-        System.out.println(Ye);
         Rectangle activity = new Rectangle();
         activity.setY(Ye);
         activity.setX(X);
