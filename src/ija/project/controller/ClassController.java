@@ -46,7 +46,17 @@ import org.json.JSONObject;
  */
 public class ClassController {
     public ToggleButton deleteButton;
-    public ToggleButton connectButton;
+
+    public ToggleButton connectLineButton;
+
+    public ToggleButton connectDependencyButton;
+
+    public ToggleButton connectCompositionButton;
+
+    public ToggleButton connectAggregationButton;
+
+    public ToggleButton connectInheritanceButton;
+
     public ToggleButton selectButton;
     @FXML
     public Text coordinatesText;
@@ -71,6 +81,12 @@ public class ClassController {
     private enum Mode{
         select, connect, delete
     }
+
+    private enum ArrowType{
+        line, dependency, composition, inheritance, aggregation
+    }
+
+    ArrowType arrowType;
     @FXML
     private static String activeScene;
     private Mode mouseMode = Mode.select;
@@ -192,7 +208,7 @@ public class ClassController {
         @Override
         public void run() {
             for(Connection conn : remove.getConnections()) {
-                root.getChildren().remove(conn.getArrowHead());
+                root.getChildren().remove(conn.getArrowHead("line"));
                 root.getChildren().remove(conn);
                 conList.remove(conn);
             }
@@ -204,7 +220,7 @@ public class ClassController {
         @Override
         public void undo() {
             for (Connection conn: remove.getConnections()) {
-                root.getChildren().add(conn.getArrowHead());
+                root.getChildren().add(conn.getArrowHead("line"));
                 root.getChildren().add(conn);
                 conList.add(conn);
             }
@@ -216,7 +232,7 @@ public class ClassController {
         @Override
         public void redo() {
             for (Connection conn: remove.getConnections()) {
-                root.getChildren().remove(conn.getArrowHead());
+                root.getChildren().remove(conn.getArrowHead("line"));
                 root.getChildren().remove(conn);
                 conList.remove(conn);
             }
@@ -245,13 +261,19 @@ public class ClassController {
             connect = new Connection(from, to);
             root.getChildren().add(connect);
             // šipka
-            root.getChildren().add(connect.getArrowHead());
+            if(arrowType != ArrowType.line) {
+                root.getChildren().add(connect.getArrowHead(arrowType.name()));
+            }
             from.appendConnection(connect);
             to.appendConnection(connect);
             from.toFront();
             //to.toFront();
             conList.add(connect);
-            connectButton.setSelected(false);
+            connectLineButton.setSelected(false);
+            connectDependencyButton.setSelected(false);
+            connectCompositionButton.setSelected(false);
+            connectAggregationButton.setSelected(false);
+            connectInheritanceButton.setSelected(false);
             selectButton.setSelected(true);
             selected.setStyle("-fx-border-style: none");
             selected = null;
@@ -262,7 +284,7 @@ public class ClassController {
             from.deleteConnection(connect);
             to.deleteConnection(connect);
             root.getChildren().remove(connect);
-            root.getChildren().remove(connect.getArrowHead());
+            root.getChildren().remove(connect.getArrowHead("line"));
             conList.remove(connect);
         }
 
@@ -271,7 +293,7 @@ public class ClassController {
             from.appendConnection(connect);
             to.appendConnection(connect);
             root.getChildren().add(connect);
-            root.getChildren().add(connect.getArrowHead());
+            root.getChildren().add(connect.getArrowHead("line"));
             conList.add(connect);
         }
     }
@@ -379,7 +401,11 @@ public class ClassController {
         }
         mouseMode = Mode.select;
         deleteButton.setSelected(false);
-        connectButton.setSelected(false);
+        connectLineButton.setSelected(false);
+        connectDependencyButton.setSelected(false);
+        connectCompositionButton.setSelected(false);
+        connectAggregationButton.setSelected(false);
+        connectInheritanceButton.setSelected(false);
     }
 
     /**
@@ -394,7 +420,11 @@ public class ClassController {
         else {
             mouseMode = Mode.delete;
             selectButton.setSelected(false);
-            connectButton.setSelected(false);
+            connectLineButton.setSelected(false);
+            connectDependencyButton.setSelected(false);
+            connectCompositionButton.setSelected(false);
+            connectAggregationButton.setSelected(false);
+            connectInheritanceButton.setSelected(false);
         }
     }
 
@@ -402,8 +432,9 @@ public class ClassController {
      * Funkce změní uživatelský mod na Connect
      * @param event JavaFX ActionEvent
      */
-    public void changeToConnect(){
-        textMode.setText("Mode:\n Connect");
+    public void changeToLineConnect(){
+        arrowType = ArrowType.line;
+        textMode.setText("Mode:\n Connect " + arrowType.name());
         if(mouseMode == Mode.connect){
             changeToSelect();
         }
@@ -411,8 +442,85 @@ public class ClassController {
             mouseMode = Mode.connect;
             deleteButton.setSelected(false);
             selectButton.setSelected(false);
+            connectDependencyButton.setSelected(false);
+            connectCompositionButton.setSelected(false);
+            connectAggregationButton.setSelected(false);
+            connectInheritanceButton.setSelected(false);
         }
     }
+
+    /**
+     * Funkce změní uživatelský mod na Connect
+     * @param event JavaFX ActionEvent
+     */
+    public void changeToCompositionConnect(){
+        arrowType = ArrowType.composition;
+        textMode.setText("Mode:\n Connect " + arrowType.name());
+        if(mouseMode == Mode.connect){
+            changeToSelect();
+        }
+        else {
+            mouseMode = Mode.connect;
+            deleteButton.setSelected(false);
+            selectButton.setSelected(false);
+            connectLineButton.setSelected(false);
+            connectDependencyButton.setSelected(false);
+            connectAggregationButton.setSelected(false);
+            connectInheritanceButton.setSelected(false);
+        }
+    }
+
+    public void changeToAggregationConnect(){
+        arrowType = ArrowType.aggregation;
+        textMode.setText("Mode:\n Connect " + arrowType.name());
+        if(mouseMode == Mode.connect){
+            changeToSelect();
+        }
+        else {
+            mouseMode = Mode.connect;
+            deleteButton.setSelected(false);
+            selectButton.setSelected(false);
+            connectLineButton.setSelected(false);
+            connectDependencyButton.setSelected(false);
+            connectCompositionButton.setSelected(false);
+            connectInheritanceButton.setSelected(false);
+        }
+    }
+
+    public void changeToInheritanceConnect(){
+        arrowType = ArrowType.inheritance;
+        textMode.setText("Mode:\n Connect " + arrowType.name());
+        if(mouseMode == Mode.connect){
+            changeToSelect();
+        }
+        else {
+            mouseMode = Mode.connect;
+            deleteButton.setSelected(false);
+            selectButton.setSelected(false);
+            connectLineButton.setSelected(false);
+            connectDependencyButton.setSelected(false);
+            connectCompositionButton.setSelected(false);
+            connectAggregationButton.setSelected(false);
+        }
+    }
+
+    public void changeToDependencyConnect(){
+        arrowType = ArrowType.dependency;
+        textMode.setText("Mode:\n Connect " + arrowType.name());
+        if(mouseMode == Mode.connect){
+            changeToSelect();
+        }
+        else {
+            mouseMode = Mode.connect;
+            deleteButton.setSelected(false);
+            selectButton.setSelected(false);
+            connectLineButton.setSelected(false);
+            connectCompositionButton.setSelected(false);
+            connectAggregationButton.setSelected(false);
+            connectInheritanceButton.setSelected(false);
+        }
+    }
+
 
     /**
      * Funkce přidá dané komponentě vlastnost mít vazby
@@ -462,7 +570,11 @@ public class ClassController {
         mouseMode = Mode.select;
         deleteButton.setSelected(false);
         selectButton.setSelected(true);
-        connectButton.setSelected(false);
+        connectLineButton.setSelected(false);
+        connectDependencyButton.setSelected(false);
+        connectCompositionButton.setSelected(false);
+        connectAggregationButton.setSelected(false);
+        connectInheritanceButton.setSelected(false);
         x = 20;
         y = 10;
         if (selectedFile != null) {
@@ -478,7 +590,7 @@ public class ClassController {
                 fileHandler.setFile(selectedFile);
                 diagram = fileHandler.parseClassDiagram();
                 for (UMLClass cl : diagram.getClassesList()) {
-                    System.out.println("UMLClass: " + cl.getName());
+                    //System.out.println("UMLClass: " + cl.getName());
                     // Creating GUI
                     ClassBox rectangle = new ClassBox(cl);
                     draggable(rectangle);
@@ -494,7 +606,7 @@ public class ClassController {
                     y += 10;
                 }
                 for (Connection conn : fileHandler.parseConnections(seznam)){
-                    anchorPane.getChildren().addAll(conn,conn.getArrowHead());
+                    anchorPane.getChildren().addAll(conn,conn.getArrowHead("line"));
                     connections.add(conn);
                     conn.toBack();
                 }
@@ -681,56 +793,60 @@ public class ClassController {
         });
         Optional<ResultsActivity> optionalResults = dialog.showAndWait();
         optionalResults.ifPresent((ResultsActivity results) -> {
-            System.out.println(results.fromHorizontal + "-" + results.toHorizontal + ", " + results.fromVertical + "-" + results.toVertical);
-            /* TODO nechápu proč není schopnej najít prvek na indexu 0 když tam ten prvek je (řádek 694,700,706,708)
+            System.out.println("Sirka = " + results.fromHorizontal + "-" + results.toHorizontal + ", Vyska = " + results.fromVertical + "-" + results.toVertical);
+            // TODO nechápu proč není schopnej najít prvek na indexu 0 když tam ten prvek je (řádek 694,700,706,708)
             SequenceDiagram sdiagram = sequenceDiagrams.get(currentPane);
             String fromString;
             String toString;
             UMLClass from = null;
             UMLClass to = null;
             if(results.fromHorizontal == 1) {
-                System.out.println("Actor from");
-                System.out.println(sequenceClasses.get(currentPane));
                 fromString = "actor";
+                System.out.println(sequenceClasses.get(currentPane));
                 to = sequenceClasses.get(currentPane).get(results.toHorizontal-2); //-2 protože 1 je actor a má to být index (indexováno je od 0)
                 toString = to.getName();
             }
             else if(results.toHorizontal == 1) {
-                System.out.println("Actor to");
-                System.out.println(sdiagram.getClasses().size());
-                from = sequenceClasses.get(currentPane).get(results.fromHorizontal-1);
+                System.out.println(sequenceClasses.get(currentPane));
+                from = sequenceClasses.get(currentPane).get(results.fromHorizontal);
                 fromString = from.getName();
                 toString = "actor";
             }
             else {
-                System.out.println(sdiagram.getClasses().size());
-                from = sequenceClasses.get(currentPane).get(results.fromHorizontal-1);
+                System.out.println(sequenceClasses.get(currentPane));
+                from = sequenceClasses.get(currentPane).get(results.fromHorizontal-2);
                 fromString = from.getName();
-                to = sequenceClasses.get(currentPane).get(results.toHorizontal-1);
-                toString = to.toString();
+                to = sequenceClasses.get(currentPane).get(results.toHorizontal-2);
+                toString = to.getName();
             }
+            // TODO: Co s těmi listy?? Vím že určují výšku, to je vše.
             ArrayList<Integer> fromList;
             ArrayList<Integer> toList;
-            if(from != null) {
-                fromList = from.getActiveFrom();
-                fromList.add(results.fromVertical);
+            if (from != null) {
+                if(!isInconsistentClass(fromString)){
+                    System.out.println("Dostanu se na radek 714");
+                    fromList = from.getActiveFrom();
+                    fromList.add(results.fromVertical);
+                }
             }
-            if(to != null) {
-                toList = to.getActiveTo();
-                toList.add(results.toVertical);
+            if (to != null) {
+                if(!isInconsistentClass(toString)) {
+                    toList = to.getActiveTo();
+                    toList.add(results.toVertical);
+                }
             }
             sdiagram.createConnection(results.methodName, fromString, toString, 1);
-            sdiagram.createConnection("return", toString, fromString, 2);*/
+            sdiagram.createConnection("return", toString, fromString, 2);
             setSequencePanes();
         });
     }
 
     public void setSequencePanes(){
         int i = 0;
-        System.out.println("setSequencePanes: Updating sequence diagram");
+        //System.out.println("setSequencePanes: Updating sequence diagram");
         if(sequenceDiagrams == null) {
             sequenceDiagrams = new ArrayList<>();
-            System.out.println("sequenceDiagrams is empty " + sequenceDiagrams.isEmpty());
+            //System.out.println("sequenceDiagrams is empty " + sequenceDiagrams.isEmpty());
             sequenceDiagrams.add(new SequenceDiagram("name", diagram));
         }
         for (SequenceDiagram diagram : sequenceDiagrams) {
@@ -755,7 +871,7 @@ public class ClassController {
             for (UMLClass cl : classes) {
                 numberObjects++;
                 pane.getChildren().addAll(createObjects(cl.getName(),50+numberObjects*100));
-                System.out.println(cl.getName() + "number of objects: " + numberObjects);
+                //System.out.println(cl.getName() + "number of objects: " + numberObjects);
                 try{
                     ArrayList<Integer> from = cl.getActiveFrom();
                     ArrayList<Integer> to = cl.getActiveTo();
@@ -780,12 +896,10 @@ public class ClassController {
             List<UMLConnection> spojeni = diagram.getConnections();
             int k = 0;
             for (UMLConnection con : spojeni) {
-                System.out.println("con.getFrom: " + con.getFrom());
                 int from = diagram.getOrder(con.getFrom());
-                System.out.println("toClass: " + con.getTo());
                 int to = diagram.getOrder(con.getTo());
                 String name = con.getName();
-                System.out.println("Operation("+from+", "+to+", "+con.getType()+", "+k+", "+name+", " +con.getTo());
+                //System.out.println("Operation("+from+", "+to+", "+con.getType()+", "+k+", "+name+", " +con.getTo());
                 Operation operation = new Operation(from,to,con.getType(),k,name,isInconsistentMethod(con.getTo(),name, con.getType()));
                 //System.out.println("radek 626");
                 k++;
@@ -887,7 +1001,6 @@ public class ClassController {
         Text actor = new Text(name);
         if(isInconsistentClass(name)) {
             actor.setStroke(Color.RED);
-            System.out.println(name + " is inconsistent");
         }
         actor.setX(x);
         actor.setY(80);
@@ -904,7 +1017,6 @@ public class ClassController {
     }
 
     public List<Node> createLines(int max, int count){
-        System.out.println("createLines(" + max + ", " + count + ")");
         List<Node> list = new ArrayList<Node>();
         int X = 70;
         int Ys = 130;
@@ -923,7 +1035,6 @@ public class ClassController {
     }
 
     public Rectangle createActivity(int poradi, int from, int to){
-        System.out.println("createActivity(" + poradi + ", " + from + ", " + to + ")");
         int X = 65+poradi*100;
         int Ye = 135+(from-1)*60;
         Rectangle activity = new Rectangle();

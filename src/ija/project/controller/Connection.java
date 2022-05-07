@@ -116,7 +116,7 @@ public class Connection extends Line {
         return i;
     }
 
-    public Polygon getArrowHead() {
+    public Polygon getArrowHead(String type) {
         return this.arrowHead;
     }
 
