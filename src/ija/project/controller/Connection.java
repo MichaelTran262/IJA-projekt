@@ -49,35 +49,25 @@ public class Connection extends Line {
                 tip.x+25,tip.y+25,
                 tip.x-25,tip.y+25
         );
-        this.endXProperty().addListener((observableValue, number, t1) -> {
-            //System.out.println("Connection is moving, X: " + number + "new X: " + t1);
-            drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
-        });
-        this.endYProperty().addListener((observableValue, number, t1) -> {
-            //System.out.println("Connection is moving, old Y: " + number + "new Y: " + t1);
-            drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
-        });
-        this.startXProperty().addListener((observableValue, number, t1) -> {
-            //System.out.println("Connection is moving, X: " + number + "new X: " + t1);
-            drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
-        });
-        this.startYProperty().addListener((observableValue, number, t1) -> {
-            //System.out.println("Connection is moving, old Y: " + number + "new Y: " + t1);
-            drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
-        });
     }
 
     public void drawArrow(double x, double y, double rectHeight, double rectWidth) {
         Position arrowTipPosition = getIntersection(x, y, rectHeight, rectWidth);
-        double angle = Math.atan((y - this.getEndY()) / (x - this.getEndX()));
-        //System.out.println("Angle" + Math.tan(angle) + "Arrow position: x=" + arrowTipPosition.x + " y=" + arrowTipPosition.y);
-        double x2 = arrowTipPosition.x + Math.cos(angle + Math.toRadians(20)) * 25;
-        double y2 = arrowTipPosition.y + Math.sin(angle + Math.toRadians(20)) * 25;
-        double x3 = arrowTipPosition.x + Math.cos(angle - Math.toRadians(20)) * 25;
-        double y3 = arrowTipPosition.y + Math.sin(angle - Math.toRadians(20)) * 25;
+        double theta = Math.atan2((this.getEndY() - y),(this.getEndX() - x));
+        System.out.println("Angle" + Math.tan(theta) + "Arrow position: x=" + arrowTipPosition.x + " y=" + arrowTipPosition.y);
+        double x2, y2, x3, y3, x4, y4;
+        x2 = arrowTipPosition.x + Math.cos(theta + Math.toRadians(20)) * 25;
+        y2 = arrowTipPosition.y + Math.sin(theta + Math.toRadians(20)) * 25;
+        x3 = arrowTipPosition.x + Math.cos(theta - Math.toRadians(20)) * 25;
+        y3 = arrowTipPosition.y + Math.sin(theta - Math.toRadians(20)) * 25;
+        System.out.println("x1 = " + arrowTipPosition.x + ", y1 = " + arrowTipPosition.y + ", x2 = " + x2 + ", y2 = " + y2 + ", x3 = " + x3 + ", y3 = " + y3);
+        x4 = arrowTipPosition.x + (x2-arrowTipPosition.x)+(x3-arrowTipPosition.x);
+        y4 = arrowTipPosition.y + (y2-arrowTipPosition.y)+(y3-arrowTipPosition.y);
+        System.out.println("x4 = " + x4 + ", y4 = " + arrowTipPosition.y);
         this.arrowHead.getPoints().setAll(
                 arrowTipPosition.x, arrowTipPosition.y,
                 x2, y2,
+                x4, y4,
                 x3, y3
         );
     }
@@ -105,11 +95,9 @@ public class Connection extends Line {
         double qy = Math.signum(pos.y);
 
         if (tan_theta > tan_phi) {
-            System.out.println("1 tan_theta");
             i.x = x + (h / tan_theta) * qx;
             i.y = y + (h * qy);
         } else {
-            System.out.println("2 tan_theta");
             i.x = x + (w * qx);
             i.y = y + (w * tan_theta * qy);
         }
@@ -117,6 +105,22 @@ public class Connection extends Line {
     }
 
     public Polygon getArrowHead(String type) {
+        this.endXProperty().addListener((observableValue, number, t1) -> {
+            //System.out.println("Connection is moving, X: " + number + "new X: " + t1);
+            drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
+        });
+        this.endYProperty().addListener((observableValue, number, t1) -> {
+            //System.out.println("Connection is moving, old Y: " + number + "new Y: " + t1);
+            drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
+        });
+        this.startXProperty().addListener((observableValue, number, t1) -> {
+            //System.out.println("Connection is moving, X: " + number + "new X: " + t1);
+            drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
+        });
+        this.startYProperty().addListener((observableValue, number, t1) -> {
+            //System.out.println("Connection is moving, old Y: " + number + "new Y: " + t1);
+            drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
+        });
         return this.arrowHead;
     }
 
