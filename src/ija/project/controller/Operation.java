@@ -1,5 +1,6 @@
 package ija.project.controller;
 
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
@@ -11,13 +12,15 @@ public class Operation extends Line {
     private Line up = new Line();
     private Line down = new Line();
     private Text name;
+    private boolean inconsistant;
 
-    public Operation(int odkud, int kam, int typ, int poradi, String jmeno){
+    public Operation(int odkud, int kam, int typ, int poradi, String jmeno, boolean inconsistent){
         super();
         from=odkud;
         to=kam;
         type=typ;
         order=poradi;
+        inconsistant = inconsistent;
         setStartX(70+from*100);
         setStartY(135+order*60);
         setEndX(this.getStartX()+(to-from)*100);
@@ -57,5 +60,7 @@ public class Operation extends Line {
             name.setX((getStartX()+getEndX())/2-10);
             name.setY(getStartY()-5);
         }
+        if(inconsistant)
+            name.setStroke(Color.RED);
     }
 }

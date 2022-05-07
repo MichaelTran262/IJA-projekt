@@ -3,6 +3,8 @@ package ija.project.controller;
 import ija.project.model.ClassDiagram;
 import ija.project.model.UMLAttribute;
 import ija.project.model.UMLClass;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -16,7 +18,6 @@ import javafx.scene.text.FontWeight;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * @author      Thanh Q. Tran     <xtrant02 @ stud.fit.vutbr.cz>
@@ -34,10 +35,6 @@ public class ClassBox extends StackPane {
     private ArrayList<Connection> connections = new ArrayList<Connection>();
     private Rectangle rectangle = new Rectangle(100, 160, Color.WHITE);
 
-    public TextField getClassTitle() {
-        return classTitle;
-    }
-
     /**
      * Konstruktor třidy ClassBox, nastavuje vlastnosti GUI komponentů
      * @param cl Třída UML, která Classbox reprezentuje
@@ -51,10 +48,6 @@ public class ClassBox extends StackPane {
         classTitle.setTranslateY(-50);
         classTitle.setFont(Font.font("Verdana", FontWeight.BOLD,11));
         classTitle.setMaxWidth(rectangle.getWidth()-2);
-        classTitle.textProperty().addListener((observable, oldValue, newValue) -> {
-            cl.setName(newValue);
-            System.out.println("Title changed from " + oldValue + " to " + cl.getName());
-        });
         update();
         this.setContextMenu(this);
     }
@@ -179,7 +172,15 @@ public class ClassBox extends StackPane {
         return this.cl;
     }
 
+    public TextField getClassTitle() {
+        return classTitle;
+    }
+
     public Rectangle getRectangle() {
         return rectangle;
+    }
+
+    public void setClName(String name) {
+        cl.setName(name);
     }
 }

@@ -33,7 +33,21 @@ public class SequenceDiagram extends Element{
     }
 
     public UMLConnection createConnection(String name, String from, String to, int type){
-        UMLConnection newConnection = new UMLConnection(name, from,to,type);
+        System.out.println("createConnection(" + name + ", " + from + ", " + to + ")");
+        UMLConnection newConnection;
+        UMLClass fromClass;
+        UMLClass toClass;
+        if(from.equals("actor")) {
+            toClass = getClassByName(to);
+            newConnection = new UMLConnection(name, from, toClass, type);
+        } else if (to.equals("actor")) {
+            fromClass = getClassByName(from);
+            newConnection = new UMLConnection(name, fromClass, to, type);
+        }else {
+            fromClass = getClassByName(from);
+            toClass = getClassByName(to);
+            newConnection = new UMLConnection(name, fromClass, toClass, type);
+        }
         connectionList.add(newConnection);
         return newConnection;
     }
@@ -49,7 +63,9 @@ public class SequenceDiagram extends Element{
 
     public int getOrder(String name){
         int i = 1;
+        System.out.println("getOrder, name = " + name);
         for(UMLClass cl : classList){
+            System.out.println("cl.getname = " + cl.getName());
             if(name.equals(cl.getName())){
                 return i;
             }

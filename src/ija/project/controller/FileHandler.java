@@ -67,6 +67,7 @@ public class FileHandler {
     }
 
     public ArrayList<Connection> parseConnections(List<ClassBox> classesList) {
+        lineList.clear();
         try {
             String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
             JSONObject json = new JSONObject(content);
@@ -107,9 +108,9 @@ public class FileHandler {
             for (int i = 0; i < sequence.length(); i++) {
                 String diagramName = sequence.getJSONObject(i).getString("name");
                 SequenceDiagram diagram = new SequenceDiagram(diagramName, classDiagram);
-                JSONArray tridy = sequence.getJSONObject(i).getJSONArray("classes");
-                for (int j = 0; j < tridy.length(); j++) {
-                    JSONObject currClass = tridy.getJSONObject(j);
+                JSONArray objects = sequence.getJSONObject(i).getJSONArray("objects");
+                for (int j = 0; j < objects.length(); j++) {
+                    JSONObject currClass = objects.getJSONObject(j);
                     JSONArray currStart = currClass.getJSONArray("start");
                     JSONArray currEnd = currClass.getJSONArray("end");
                     if (currStart.length() != currEnd.length())

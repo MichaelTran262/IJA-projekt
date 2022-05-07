@@ -50,19 +50,19 @@ public class Connection extends Line {
                 tip.x-25,tip.y+25
         );
         this.endXProperty().addListener((observableValue, number, t1) -> {
-            System.out.println("Connection is moving, X: " + number + "new X: " + t1);
+            //System.out.println("Connection is moving, X: " + number + "new X: " + t1);
             drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
         });
         this.endYProperty().addListener((observableValue, number, t1) -> {
-            System.out.println("Connection is moving, old Y: " + number + "new Y: " + t1);
+            //System.out.println("Connection is moving, old Y: " + number + "new Y: " + t1);
             drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
         });
         this.startXProperty().addListener((observableValue, number, t1) -> {
-            System.out.println("Connection is moving, X: " + number + "new X: " + t1);
+            //System.out.println("Connection is moving, X: " + number + "new X: " + t1);
             drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
         });
         this.startYProperty().addListener((observableValue, number, t1) -> {
-            System.out.println("Connection is moving, old Y: " + number + "new Y: " + t1);
+            //System.out.println("Connection is moving, old Y: " + number + "new Y: " + t1);
             drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
         });
     }
@@ -70,7 +70,7 @@ public class Connection extends Line {
     public void drawArrow(double x, double y, double rectHeight, double rectWidth) {
         Position arrowTipPosition = getIntersection(x, y, rectHeight, rectWidth);
         double angle = Math.atan((y - this.getEndY()) / (x - this.getEndX()));
-        System.out.println("Angle" + Math.tan(angle) + "Arrow position: x=" + arrowTipPosition.x + " y=" + arrowTipPosition.y);
+        //System.out.println("Angle" + Math.tan(angle) + "Arrow position: x=" + arrowTipPosition.x + " y=" + arrowTipPosition.y);
         double x2 = arrowTipPosition.x + Math.cos(angle + Math.toRadians(20)) * 25;
         double y2 = arrowTipPosition.y + Math.sin(angle + Math.toRadians(20)) * 25;
         double x3 = arrowTipPosition.x + Math.cos(angle - Math.toRadians(20)) * 25;

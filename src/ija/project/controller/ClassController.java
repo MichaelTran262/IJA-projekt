@@ -4,14 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 import ija.project.model.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -22,6 +23,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -60,11 +62,10 @@ public class ClassController {
     public AnchorPane sequenceAnchorPane;
     public Label nameOfDiagram;
     public Button showButton;
-    public static Button undoButton;
+    public Button undoButton;
     public Button redoButton;
     private int currentPane = -1;
     private ArrayList<Integer> numberOfObjects = new ArrayList<Integer>();
-
 
     private enum Mode{
         select, connect, delete
@@ -92,14 +93,8 @@ public class ClassController {
         double y;
     }
 
-    private static Stack<Action> history = new Stack<>();
-    private static Stack<Action> undoHistory = new Stack<>();
-
-    interface Action{
-        void run();
-        void undo();
-        void redo();
-    }
+    Stack<Action> history = new Stack<>();
+    Stack<Action> undoHistory = new Stack<>();
 
     class AddClass implements Action{
         AnchorPane root;
@@ -121,7 +116,11 @@ public class ClassController {
             clsAdd.addAttribute(new UMLAttribute("mail"));
             // Creating GUI
             add = new ClassBox(clsAdd);
-            TextField textField = add.getClassTitle();
+            add.getClassTitle().textProperty().addListener((observable, oldValue, newValue) -> {
+                //Dej sem execute a undo
+                add.setClName(newValue);
+                System.out.println("Old value: " + oldValue + "New value: " + newValue);
+            });
             draggable(add);
             connectable(add);
             add.toFront();
@@ -205,7 +204,6 @@ public class ClassController {
         ArrayList<Connection> conList;
         ClassBox from;
         ClassBox to;
-
         Connection connect;
 
         public ConnectClasses(AnchorPane root,  ArrayList<Connection> conList, ClassBox from, ClassBox to) {
@@ -250,53 +248,8 @@ public class ClassController {
             conList.add(connect);
         }
     }
-/*
-    class EditClass implements Action{
-        ClassBox box;
-        String valueNew;
-        String valueOld;
 
-        public EditClass(ClassBox box, KeyEvent event) {
-            System.out.println(box.getUMLClass().getName() + "\n");
-            this.box = box;
-            this.valueOld = box.getClassTitle().getText();
-            if(isWriteable(event.getCode()))
-                this.valueNew = valueOld + event.getCharacter();
-            else {
-                this.valueNew = valueOld;
-                if (event.getCode() == KeyCode.valueOf("BACK_SPACE")) {
-                    StringBuffer sb = new StringBuffer(valueNew);
-                    sb.deleteCharAt(sb.length()-1);
-                }
-            }
-        }
-
-        private boolean isWriteable(KeyCode code){
-            if(code.getName() == "SPACE")
-                return true;
-            return code.isDigitKey() || code.isLetterKey();
-        }
-
-        @Override
-        public void run() {
-            System.out.println("old = " + valueOld + "\n new = " + valueNew + "\n");
-            box.getUMLClass().setName(valueNew);
-            box.update();
-        }
-
-        @Override
-        public void undo() {
-            box.getUMLClass().setName(valueOld);
-            box.update();
-        }
-
-        @Override
-        public void redo() {
-            run();
-        }
-    }
-*/
-    private static void execute(Action action){
+    void execute(Action action){
         history.add(action);
         action.run();
         undoButton.setDisable(false);
@@ -470,6 +423,9 @@ public class ClassController {
 
     @FXML
     private void loadFile() throws IOException {
+        anchorPane.getChildren().clear();
+        seznam.clear();
+        connections.clear();
         FileChooser fc = new FileChooser();
         File selectedFile = fc.showOpenDialog(null);
         selected = null;
@@ -484,16 +440,20 @@ public class ClassController {
                 sequenceScene = new Scene(FXMLLoader.load(getClass().getClassLoader().getResource("Sequence.fxml")));
                 String css = this.getClass().getClassLoader().getResource("application.css").toExternalForm();
                 sequenceScene.getStylesheets().add(css);
-                seznam.clear();
-                connections.clear();
-                anchorPane.getChildren().clear();
                 fileHandler.setFile(selectedFile);
                 diagram = fileHandler.parseClassDiagram();
                 for (UMLClass cl : diagram.getClassesList()) {
+                    System.out.println("UMLClass: " + cl.getName());
                     // Creating GUI
                     ClassBox rectangle = new ClassBox(cl);
                     draggable(rectangle);
                     connectable(rectangle);
+                    rectangle.getClassTitle().textProperty().addListener((observable, oldValue, newValue) -> {
+                        //Dej sem execute a undo
+                        rectangle.setClName(newValue);
+                        System.out.println("Old value: " + oldValue + "New value: " + newValue);
+                        //execute(new EditText);
+                    });
                     seznam.add(rectangle);
                     anchorPane.getChildren().add(rectangle);
                     rectangle.toFront();
@@ -583,38 +543,123 @@ public class ClassController {
         activeScene = "Class";
     }
 
-    public void sequenceAddClass() {/*TODO
-        UMLClass newClass = sequenceDiagrams.get(currentPane).createClass("new class");
-        int numberObjects = numberOfObjects.get(currentPane);
-        numberObjects++;
-        System.out.println(numberObjects);
-        sequencePanes.get(currentPane).getChildren().addAll(createObjects("xd",50+6*100));
-        Text actor = new Text(newClass.getName());
-        numberOfObjects.remove(currentPane);
-        numberOfObjects.add(currentPane,numberObjects);
-*/
+    private static class Results {
+        String objectName;
+        String resultClass;
+        public Results(String name, String className) {
+            this.objectName = name;
+            this.resultClass = className;
+        }
+    }
+
+    public void sequenceAddClass() {
+        ArrayList<String> dialogData = new ArrayList<>();
+        dialogData.add("User");
+        for(ClassBox box : seznam) {
+            String className = box.getClassName();
+            dialogData.add(className);
+        }
+        Dialog<Results> dialog = new Dialog<>();
+        dialog.setTitle("Přidat objekt");
+        dialog.setHeaderText("Zvolte třídu a jméno objektu (jméno je nepovinné)");
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        TextField objectText = new TextField("o1");
+        ComboBox<String> comboBox = new ComboBox<>(FXCollections.observableList(dialogData));
+        comboBox.getSelectionModel().selectFirst();
+        dialogPane.setContent(new VBox(8, objectText, comboBox));
+        dialog.setResultConverter((ButtonType button) -> {
+            if (button == ButtonType.OK) {
+                return new Results(objectText.getText(), comboBox.getValue());
+            }
+            return null;
+        });
+        Optional<Results> optionalResults = dialog.showAndWait();
+        optionalResults.ifPresent((Results results) -> {
+            UMLClass newClass = sequenceDiagrams.get(currentPane).createClass(results.resultClass);
+            setSequencePanes();
+        });
+    }
+
+    private static class ResultsActivity {
+        String methodName;
+        int fromHorizontal;
+        int toHorizontal;
+        int fromVertical;
+        int toVertical;
+        public ResultsActivity(String methodName, int fromHorizontal, int toHorizontal, int fromVertical, int toVertical) {
+            this.methodName = methodName;
+            this.fromHorizontal = fromHorizontal;
+            this.toHorizontal = toHorizontal;
+            this.fromVertical = fromVertical;
+            this.toVertical = toVertical;
+        }
+    }
+
+    public void sequenceAddActivity() {
+        ArrayList<String> dialogData = new ArrayList<>();
+        dialogData.add("<<create>>");
+        Dialog<ResultsActivity> dialog = new Dialog<>();
+        dialog.setTitle("Přidat aktivitu");
+        dialog.setHeaderText("Zvolte Aktivitu a rozsah");
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        TextField objectText = new TextField("method()");
+        Spinner<Integer> spinnerFromVertical = new Spinner<>(1, 100, 1);
+        Spinner<Integer> spinnerToVertical= new Spinner<>(1, 100, 1);
+        final Separator dblSeparator = new Separator(Orientation.HORIZONTAL);
+        Spinner<Integer> spinnerFromHorizontal = new Spinner<>(1, 100, 1);
+        Spinner<Integer> spinnerToHorizontal = new Spinner<>(1, 100, 1);
+        dialogPane.setContent(new VBox(8, objectText, new Text("Výška od - do"),
+                spinnerFromVertical, spinnerToVertical,
+                dblSeparator, new Text("Šířka od - do"),
+                spinnerFromHorizontal, spinnerToHorizontal));
+        dialog.setResultConverter((ButtonType button) -> {
+            if (button == ButtonType.OK) {
+                return new ResultsActivity(objectText.getText(), spinnerFromHorizontal.getValue(), spinnerToHorizontal.getValue(),
+                        spinnerFromVertical.getValue(), spinnerToVertical.getValue());
+            }
+            return null;
+        });
+        Optional<ResultsActivity> optionalResults = dialog.showAndWait();
+        optionalResults.ifPresent((ResultsActivity results) -> {
+            System.out.println(results.fromHorizontal + "-" + results.toHorizontal + ", " + results.fromVertical + "-" + results.toVertical);
+
+            setSequencePanes();
+        });
     }
 
     public void setSequencePanes(){
-            int i = 0;
-            for (SequenceDiagram diagram:sequenceDiagrams) {
-                AnchorPane pane = new AnchorPane();
-                Label nameDiagram = new Label(diagram.getName());
-                nameDiagram.setId("nameOfDiagram");
-                nameDiagram.setLayoutX(238);
-                nameDiagram.setLayoutY(14);
-                nameDiagram.setFont(new Font(26));
-                pane.getChildren().add(nameDiagram);
-                List<UMLClass> classes = diagram.getClasses();
-                int x = 50;
-                int max = 0;
-                int min = 1000;
-                int j = 1;
-                List<Rectangle> rectangles = new ArrayList<>();
-                int numberObjects = 0;
-                for (UMLClass cl:classes) {
-                    numberObjects++;
-                    pane.getChildren().addAll(createObjects(cl.getName(),50+numberObjects*100));
+        int i = 0;
+        System.out.println("setSequencePanes: Updating sequence diagram");
+        if(sequenceDiagrams == null) {
+            sequenceDiagrams = new ArrayList<>();
+            System.out.println("sequenceDiagrams is empty " + sequenceDiagrams.isEmpty());
+            sequenceDiagrams.add(new SequenceDiagram("name", diagram));
+        }
+        for (SequenceDiagram diagram : sequenceDiagrams) {
+            sequencePanes.clear();
+            numberOfObjects.clear();
+            int x = 50;
+            int max = 0;
+            int min = 1000;
+            int j = 1;
+            AnchorPane pane = new AnchorPane();
+            Label nameDiagram = new Label(diagram.getName());
+            nameDiagram.setId("nameOfDiagram");
+            nameDiagram.setLayoutX(238);
+            nameDiagram.setLayoutY(14);
+            nameDiagram.setFont(new Font(26));
+            //pane.getChildren().add(nameDiagram);
+            List<UMLClass> classes = diagram.getClasses();
+            currentPane = 0;
+            List<Rectangle> rectangles = new ArrayList<>();
+            int numberObjects = 0;
+            for (UMLClass cl : classes) {
+                numberObjects++;
+                pane.getChildren().addAll(createObjects(cl.getName(),50+numberObjects*100));
+                System.out.println(cl.getName() + "number of objects: " + numberObjects);
+                try{
                     ArrayList<Integer> from = cl.getActiveFrom();
                     ArrayList<Integer> to = cl.getActiveTo();
                     for(int l = 0; l<from.size();l++){
@@ -625,31 +670,59 @@ public class ClassController {
                         Rectangle rectangle = createActivity(j, from.get(l),to.get(l));
                         rectangles.add(rectangle);
                     }
-                    j++;
                 }
-                numberOfObjects.add(numberObjects);
-                pane.getChildren().addAll(createLines(max,classes.size()));
-                pane.getChildren().addAll(rectangles);
-                pane.getChildren().addAll(createActivity(0,min, max));
-                List<UMLConnection> spojeni = diagram.getConnections();
-                int k = 0;
-                for (UMLConnection con : spojeni) {
-                    int from = diagram.getOrder(con.getFrom());
-                    int to = diagram.getOrder(con.getTo());
-                    Operation operation = new Operation(from,to,con.getType(),k,con.getName());
-                    k++;
-                    pane.getChildren().addAll(operation, operation.getName(), operation.getUp(), operation.getDown());
-                    operation.toBack();
+                catch(Exception e){
+                    System.out.println(cl.getName() + " nemá aktivity");
                 }
-                pane.getChildren().addAll(createActor());
-                pane.setId(Integer.toString(i));
-                sequencePanes.add(pane);
-                i++;
+                j++;
             }
-            currentPane = 0;
-            nameOfDiagram.setText("");
-            sequenceAnchorPane.getChildren().addAll(sequencePanes.get(currentPane).getChildrenUnmodifiable());
-            showButton.setDisable(true);
+            numberOfObjects.add(numberObjects);
+            pane.getChildren().addAll(createLines(max,classes.size()));
+            pane.getChildren().addAll(rectangles);
+            pane.getChildren().addAll(createActivity(0,min, max));
+            List<UMLConnection> spojeni = diagram.getConnections();
+            int k = 0;
+            for (UMLConnection con : spojeni) {
+                System.out.println("con.getFrom: " + con.getFrom());
+                int from = diagram.getOrder(con.getFrom());
+                System.out.println("toClass: " + con.getTo());
+                int to = diagram.getOrder(con.getTo());
+                String name = con.getName();
+                System.out.println("Operation("+from+", "+to+", "+con.getType()+", "+k+", "+name+", " +con.getTo());
+                Operation operation = new Operation(from,to,con.getType(),k,name,isInconsistentMethod(con.getTo(),name, con.getType()));
+                //System.out.println("radek 626");
+                k++;
+                pane.getChildren().addAll(operation, operation.getName(), operation.getUp(), operation.getDown());
+                operation.toBack();
+            }
+            pane.getChildren().addAll(drawActor("User"));
+            pane.setId(Integer.toString(i));
+            //pravitko
+            final int width = 100;
+            final int height = 60;
+            Line horizontalRuler = new Line(10, 10, 1920, 10);
+            Line verticalRuler = new Line(10, 10, 10, 1920);
+            for (int i2 = 0; i2*width+70 < 1920; i2++)
+            {
+                Text number = new Text(66 + i2*width, 35, Integer.toString(i2+1));
+                pane.getChildren().add(number);
+                Line offsetLine = new Line(70 + i2*width, 10, 70 + i2*width, 20);
+                pane.getChildren().add(offsetLine);
+                number = new Text(35, 135 + i2*height, Integer.toString(i2+1));
+                pane.getChildren().add(number);
+                offsetLine = new Line(10, 135 + i2*height, 20, 135 + i2*height);
+                pane.getChildren().add(offsetLine);
+            }
+            pane.getChildren().addAll(horizontalRuler, verticalRuler);
+            sequencePanes.add(pane);
+            i++;
+            currentPane++;
+        }
+        currentPane = 0;
+        nameOfDiagram.setText("");
+        sequenceAnchorPane.getChildren().clear();
+        sequenceAnchorPane.getChildren().addAll(sequencePanes.get(currentPane).getChildrenUnmodifiable());
+        //showButton.setDisable(true);
     }
 
     public void nextDiagram(){
@@ -688,7 +761,8 @@ public class ClassController {
         sequenceAnchorPane.getChildren().addAll(sequencePanes.get(currentPane).getChildrenUnmodifiable());
     }
 
-    public List<Node> createActor(){
+    public List<Node> drawActor(String name){
+        System.out.println("drawActor()");
         List<Node> list = new ArrayList<Node>();
         Circle head = new Circle(7.5);
         head.setCenterX(70);
@@ -714,6 +788,10 @@ public class ClassController {
     public List<Node> createObjects(String name, int x){
         List<Node> list = new ArrayList<Node>();
         Text actor = new Text(name);
+        if(isInconsistentClass(name)) {
+            actor.setStroke(Color.RED);
+            System.out.println(name + " is inconsistent");
+        }
         actor.setX(x);
         actor.setY(80);
         list.add(actor);
@@ -729,6 +807,7 @@ public class ClassController {
     }
 
     public List<Node> createLines(int max, int count){
+        System.out.println("createLines(" + max + ", " + count + ")");
         List<Node> list = new ArrayList<Node>();
         int X = 70;
         int Ys = 130;
@@ -747,6 +826,7 @@ public class ClassController {
     }
 
     public Rectangle createActivity(int poradi, int from, int to){
+        System.out.println("createActivity(" + poradi + ", " + from + ", " + to + ")");
         int X = 65+poradi*100;
         int Ye = 135+(from-1)*60;
         Rectangle activity = new Rectangle();
@@ -758,5 +838,18 @@ public class ClassController {
         activity.setWidth(10);
         activity.toFront();
         return activity;
+    }
+
+    public boolean isInconsistentClass(String name){return diagram.getClassByName(name) == null;}
+
+    public boolean isInconsistentMethod(String className, String methodName, int type){
+        if(type == 2)
+            return  false;
+        UMLClass cl = sequenceDiagrams.get(currentPane).getClassByName(className);
+        for (UMLAttribute attr:cl.getAttributes()) {
+            if(methodName.equals(attr.getName()))
+                return false;
+        }
+        return true;
     }
 }
