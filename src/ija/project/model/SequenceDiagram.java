@@ -82,5 +82,9 @@ public class SequenceDiagram extends Element{
     public List<UMLConnection> getConnections(){
         return connectionList;
     }
+
+    public UMLClass getClassOnIndex(int index){
+        return classList.get(index);
+    }
 }
 

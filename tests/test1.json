@@ -21,7 +21,7 @@
     "sequence": [
         {
             "name": "Diagram1",
-            "classes": [
+            "objects": [
                 {
                     "name": "class01",
                     "start": [

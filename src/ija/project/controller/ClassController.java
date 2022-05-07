@@ -66,6 +66,7 @@ public class ClassController {
     public Button redoButton;
     private int currentPane = -1;
     private ArrayList<Integer> numberOfObjects = new ArrayList<Integer>();
+    private ArrayList<List<UMLClass>> sequenceClasses = new ArrayList<>();
 
     private enum Mode{
         select, connect, delete
@@ -96,6 +97,33 @@ public class ClassController {
     Stack<Action> history = new Stack<>();
     Stack<Action> undoHistory = new Stack<>();
 
+    class EditName implements Action{
+        String before;
+        String after;
+        ClassBox edit;
+
+        public EditName(ClassBox box, String edit) {
+            this.edit = box;
+            before = this.edit.getClassName();
+            after = edit;
+        }
+
+        @Override
+        public void run() {
+            edit.setClName(after);
+        }
+
+        @Override
+        public void undo() {
+            edit.setClName(before);
+        }
+
+        @Override
+        public void redo() {
+            run();
+        }
+    }
+
     class AddClass implements Action{
         AnchorPane root;
         ClassDiagram clsDiagram;
@@ -118,8 +146,7 @@ public class ClassController {
             add = new ClassBox(clsAdd);
             add.getClassTitle().textProperty().addListener((observable, oldValue, newValue) -> {
                 //Dej sem execute a undo
-                add.setClName(newValue);
-                System.out.println("Old value: " + oldValue + "New value: " + newValue);
+                execute(new EditName(add,newValue));
             });
             draggable(add);
             connectable(add);
@@ -189,7 +216,7 @@ public class ClassController {
         @Override
         public void redo() {
             for (Connection conn: remove.getConnections()) {
-                root.getChildren().add(conn.getArrowHead());
+                root.getChildren().remove(conn.getArrowHead());
                 root.getChildren().remove(conn);
                 conList.remove(conn);
             }
@@ -250,9 +277,11 @@ public class ClassController {
     }
 
     void execute(Action action){
-        history.add(action);
+        history.push(action);
         action.run();
         undoButton.setDisable(false);
+        undoHistory.clear();
+        redoButton.setDisable(true);
     }
 
     @FXML
@@ -423,6 +452,7 @@ public class ClassController {
 
     @FXML
     private void loadFile() throws IOException {
+        number = 1;
         anchorPane.getChildren().clear();
         seznam.clear();
         connections.clear();
@@ -437,9 +467,14 @@ public class ClassController {
         y = 10;
         if (selectedFile != null) {
             try {
+                history.clear();
+                undoButton.setDisable(true);
+                redoButton.setDisable(true);
+                undoHistory.clear();
                 sequenceScene = new Scene(FXMLLoader.load(getClass().getClassLoader().getResource("Sequence.fxml")));
                 String css = this.getClass().getClassLoader().getResource("application.css").toExternalForm();
                 sequenceScene.getStylesheets().add(css);
+                sequenceClasses.add(new ArrayList<>());
                 fileHandler.setFile(selectedFile);
                 diagram = fileHandler.parseClassDiagram();
                 for (UMLClass cl : diagram.getClassesList()) {
@@ -449,10 +484,7 @@ public class ClassController {
                     draggable(rectangle);
                     connectable(rectangle);
                     rectangle.getClassTitle().textProperty().addListener((observable, oldValue, newValue) -> {
-                        //Dej sem execute a undo
-                        rectangle.setClName(newValue);
-                        System.out.println("Old value: " + oldValue + "New value: " + newValue);
-                        //execute(new EditText);
+                        execute(new EditName(rectangle,newValue));
                     });
                     seznam.add(rectangle);
                     anchorPane.getChildren().add(rectangle);
@@ -462,7 +494,7 @@ public class ClassController {
                     y += 10;
                 }
                 for (Connection conn : fileHandler.parseConnections(seznam)){
-                    anchorPane.getChildren().add(conn);
+                    anchorPane.getChildren().addAll(conn,conn.getArrowHead());
                     connections.add(conn);
                     conn.toBack();
                 }
@@ -497,6 +529,32 @@ public class ClassController {
                 classes.put(tmp);
             }
             json.put("classes", classes);
+            JSONArray sequence = new JSONArray();
+            for (SequenceDiagram sdiagram:sequenceDiagrams){
+                JSONObject tmp = new JSONObject();
+                tmp.put("name", sdiagram.getName());
+                JSONArray objects = new JSONArray();
+                for (UMLClass cl:sdiagram.getClasses()){
+                    JSONObject tridy = new JSONObject();
+                    tridy.put("name",cl.getName());
+                    tridy.put("start", cl.getActiveFrom());
+                    tridy.put("end", cl.getActiveTo());
+                    objects.put(tridy);
+                }
+                tmp.put("objects", objects);
+                JSONArray operations = new JSONArray();
+                for(UMLConnection con:sdiagram.getConnections()){
+                    JSONObject operace = new JSONObject();
+                    operace.put("from", con.getFrom());
+                    operace.put("to", con.getTo());
+                    operace.put("type", con.getType());
+                    operace.put("name", con.getName());
+                    operations.put(operace);
+                }
+                tmp.put("operations",operations);
+                sequence.put(tmp);
+            }
+            json.put("sequence", sequence);
             JSONArray jsonConnections = new JSONArray();
             for (Connection conn : connections) {
                 String connectionString = conn.getStart().getClassName() + "--" + conn.getEnd().getClassName();
@@ -624,7 +682,45 @@ public class ClassController {
         Optional<ResultsActivity> optionalResults = dialog.showAndWait();
         optionalResults.ifPresent((ResultsActivity results) -> {
             System.out.println(results.fromHorizontal + "-" + results.toHorizontal + ", " + results.fromVertical + "-" + results.toVertical);
-
+            /* TODO nechápu proč není schopnej najít prvek na indexu 0 když tam ten prvek je (řádek 694,700,706,708)
+            SequenceDiagram sdiagram = sequenceDiagrams.get(currentPane);
+            String fromString;
+            String toString;
+            UMLClass from = null;
+            UMLClass to = null;
+            if(results.fromHorizontal == 1) {
+                System.out.println("Actor from");
+                System.out.println(sequenceClasses.get(currentPane));
+                fromString = "actor";
+                to = sequenceClasses.get(currentPane).get(results.toHorizontal-2); //-2 protože 1 je actor a má to být index (indexováno je od 0)
+                toString = to.getName();
+            }
+            else if(results.toHorizontal == 1) {
+                System.out.println("Actor to");
+                System.out.println(sdiagram.getClasses().size());
+                from = sequenceClasses.get(currentPane).get(results.fromHorizontal-1);
+                fromString = from.getName();
+                toString = "actor";
+            }
+            else {
+                System.out.println(sdiagram.getClasses().size());
+                from = sequenceClasses.get(currentPane).get(results.fromHorizontal-1);
+                fromString = from.getName();
+                to = sequenceClasses.get(currentPane).get(results.toHorizontal-1);
+                toString = to.toString();
+            }
+            ArrayList<Integer> fromList;
+            ArrayList<Integer> toList;
+            if(from != null) {
+                fromList = from.getActiveFrom();
+                fromList.add(results.fromVertical);
+            }
+            if(to != null) {
+                toList = to.getActiveTo();
+                toList.add(results.toVertical);
+            }
+            sdiagram.createConnection(results.methodName, fromString, toString, 1);
+            sdiagram.createConnection("return", toString, fromString, 2);*/
             setSequencePanes();
         });
     }
@@ -652,6 +748,7 @@ public class ClassController {
             nameDiagram.setFont(new Font(26));
             //pane.getChildren().add(nameDiagram);
             List<UMLClass> classes = diagram.getClasses();
+            sequenceClasses.add(classes);
             currentPane = 0;
             List<Rectangle> rectangles = new ArrayList<>();
             int numberObjects = 0;

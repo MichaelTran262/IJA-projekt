@@ -182,5 +182,6 @@ public class ClassBox extends StackPane {
 
     public void setClName(String name) {
         cl.setName(name);
+        classTitle.setText(name);
     }
 }
