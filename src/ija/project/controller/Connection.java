@@ -22,6 +22,8 @@ public class Connection extends Line {
 
     private Polygon arrowHead;
 
+    private String arrowType;
+
     private static class Position {
         double x;
         double y;
@@ -54,22 +56,54 @@ public class Connection extends Line {
     public void drawArrow(double x, double y, double rectHeight, double rectWidth) {
         Position arrowTipPosition = getIntersection(x, y, rectHeight, rectWidth);
         double theta = Math.atan2((this.getEndY() - y),(this.getEndX() - x));
-        System.out.println("Angle" + Math.tan(theta) + "Arrow position: x=" + arrowTipPosition.x + " y=" + arrowTipPosition.y);
+        //System.out.println("Angle" + Math.tan(theta) + "Arrow position: x=" + arrowTipPosition.x + " y=" + arrowTipPosition.y);
         double x2, y2, x3, y3, x4, y4;
-        x2 = arrowTipPosition.x + Math.cos(theta + Math.toRadians(20)) * 25;
-        y2 = arrowTipPosition.y + Math.sin(theta + Math.toRadians(20)) * 25;
-        x3 = arrowTipPosition.x + Math.cos(theta - Math.toRadians(20)) * 25;
-        y3 = arrowTipPosition.y + Math.sin(theta - Math.toRadians(20)) * 25;
-        System.out.println("x1 = " + arrowTipPosition.x + ", y1 = " + arrowTipPosition.y + ", x2 = " + x2 + ", y2 = " + y2 + ", x3 = " + x3 + ", y3 = " + y3);
+        x2 = arrowTipPosition.x + Math.cos(theta + Math.toRadians(20)) * 20;
+        y2 = arrowTipPosition.y + Math.sin(theta + Math.toRadians(20)) * 20;
+        x3 = arrowTipPosition.x + Math.cos(theta - Math.toRadians(20)) * 20;
+        y3 = arrowTipPosition.y + Math.sin(theta - Math.toRadians(20)) * 20;
+        //System.out.println("x1 = " + arrowTipPosition.x + ", y1 = " + arrowTipPosition.y + ", x2 = " + x2 + ", y2 = " + y2 + ", x3 = " + x3 + ", y3 = " + y3);
         x4 = arrowTipPosition.x + (x2-arrowTipPosition.x)+(x3-arrowTipPosition.x);
         y4 = arrowTipPosition.y + (y2-arrowTipPosition.y)+(y3-arrowTipPosition.y);
-        System.out.println("x4 = " + x4 + ", y4 = " + arrowTipPosition.y);
-        this.arrowHead.getPoints().setAll(
-                arrowTipPosition.x, arrowTipPosition.y,
-                x2, y2,
-                x4, y4,
-                x3, y3
-        );
+        //System.out.println("x4 = " + x4 + ", y4 = " + arrowTipPosition.y);
+        switch (arrowType) {
+            case "dependency":
+                this.arrowHead.getPoints().setAll(
+                        x2, y2,
+                        arrowTipPosition.x, arrowTipPosition.y,
+                        x3, y3
+                );
+                this.arrowHead.setStroke(Color.BLACK);
+                break;
+            case "composition":
+                this.arrowHead.getPoints().setAll(
+                        arrowTipPosition.x, arrowTipPosition.y,
+                        x2, y2,
+                        x4, y4,
+                        x3, y3
+                );
+                this.arrowHead.setStroke(Color.BLACK);
+                break;
+            case "inheritance":
+                this.arrowHead.getPoints().setAll(
+                        arrowTipPosition.x, arrowTipPosition.y,
+                        x2, y2,
+                        x3, y3
+                );
+                this.arrowHead.setFill(Color.WHITE);
+                this.arrowHead.setStroke(Color.BLACK);
+                break;
+            case "aggregation":
+                this.arrowHead.getPoints().setAll(
+                        arrowTipPosition.x, arrowTipPosition.y,
+                        x2, y2,
+                        x4, y4,
+                        x3, y3
+                );
+                this.arrowHead.setFill(Color.WHITE);
+                this.arrowHead.setStroke(Color.BLACK);
+                break;
+        }
     }
 
     public Position getIntersection(double x, double y, double rectHeight, double rectWidth){
@@ -104,7 +138,8 @@ public class Connection extends Line {
         return i;
     }
 
-    public Polygon getArrowHead(String type) {
+    public void createArrowHead(String type) {
+        arrowType = type;
         this.endXProperty().addListener((observableValue, number, t1) -> {
             //System.out.println("Connection is moving, X: " + number + "new X: " + t1);
             drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
@@ -121,6 +156,9 @@ public class Connection extends Line {
             //System.out.println("Connection is moving, old Y: " + number + "new Y: " + t1);
             drawArrow(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
         });
+    }
+
+    public Polygon getArrowHead() {
         return this.arrowHead;
     }
 

@@ -208,7 +208,7 @@ public class ClassController {
         @Override
         public void run() {
             for(Connection conn : remove.getConnections()) {
-                root.getChildren().remove(conn.getArrowHead("line"));
+                root.getChildren().remove(conn.getArrowHead());
                 root.getChildren().remove(conn);
                 conList.remove(conn);
             }
@@ -220,7 +220,7 @@ public class ClassController {
         @Override
         public void undo() {
             for (Connection conn: remove.getConnections()) {
-                root.getChildren().add(conn.getArrowHead("line"));
+                root.getChildren().add(conn.getArrowHead());
                 root.getChildren().add(conn);
                 conList.add(conn);
             }
@@ -232,7 +232,7 @@ public class ClassController {
         @Override
         public void redo() {
             for (Connection conn: remove.getConnections()) {
-                root.getChildren().remove(conn.getArrowHead("line"));
+                root.getChildren().remove(conn.getArrowHead());
                 root.getChildren().remove(conn);
                 conList.remove(conn);
             }
@@ -262,12 +262,13 @@ public class ClassController {
             root.getChildren().add(connect);
             // šipka
             if(arrowType != ArrowType.line) {
-                root.getChildren().add(connect.getArrowHead(arrowType.name()));
+                connect.createArrowHead(arrowType.name());
+                root.getChildren().add(connect.getArrowHead());
             }
             from.appendConnection(connect);
             to.appendConnection(connect);
             from.toFront();
-            //to.toFront();
+            to.toFront();
             conList.add(connect);
             connectLineButton.setSelected(false);
             connectDependencyButton.setSelected(false);
@@ -284,7 +285,7 @@ public class ClassController {
             from.deleteConnection(connect);
             to.deleteConnection(connect);
             root.getChildren().remove(connect);
-            root.getChildren().remove(connect.getArrowHead("line"));
+            root.getChildren().remove(connect.getArrowHead());
             conList.remove(connect);
         }
 
@@ -293,7 +294,7 @@ public class ClassController {
             from.appendConnection(connect);
             to.appendConnection(connect);
             root.getChildren().add(connect);
-            root.getChildren().add(connect.getArrowHead("line"));
+            root.getChildren().add(connect.getArrowHead());
             conList.add(connect);
         }
     }
@@ -391,7 +392,6 @@ public class ClassController {
 
     /**
      * Funkce změní uživatelský mod na Select
-     * @param event JavaFX ActionEvent
      */
     public void changeToSelect(){
         textMode.setText("Mode:\n Select");
@@ -410,7 +410,6 @@ public class ClassController {
 
     /**
      * Funkce změní uživatelský mod na Delete
-     * @param event JavaFX ActionEvent
      */
     public void changeToDelete(){
         textMode.setText("Mode:\n Delete");
@@ -430,7 +429,6 @@ public class ClassController {
 
     /**
      * Funkce změní uživatelský mod na Connect
-     * @param event JavaFX ActionEvent
      */
     public void changeToLineConnect(){
         arrowType = ArrowType.line;
@@ -451,7 +449,6 @@ public class ClassController {
 
     /**
      * Funkce změní uživatelský mod na Connect
-     * @param event JavaFX ActionEvent
      */
     public void changeToCompositionConnect(){
         arrowType = ArrowType.composition;
@@ -606,7 +603,7 @@ public class ClassController {
                     y += 10;
                 }
                 for (Connection conn : fileHandler.parseConnections(seznam)){
-                    anchorPane.getChildren().addAll(conn,conn.getArrowHead("line"));
+                    anchorPane.getChildren().addAll(conn,conn.getArrowHead());
                     connections.add(conn);
                     conn.toBack();
                 }
