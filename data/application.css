@@ -12,3 +12,15 @@
 Text {
     -fx-background-color: "white";
 }
+
+.text-field {
+    -fx-text-box-border: transparent;
+    -fx-background-insets: 0;
+    -fx-text-inner-color: black;
+}
+
+.text-field:focused {
+    -fx-focus-color: transparent;
+    -fx-background-insets: 0;
+    -fx-text-inner-color: black;
+}

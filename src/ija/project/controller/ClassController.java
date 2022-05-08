@@ -158,6 +158,7 @@ public class ClassController {
             UMLClass clsAdd = diagram.createClass("Title " + number);
             clsAdd.addAttribute(new UMLAttribute("jméno"));
             clsAdd.addAttribute(new UMLAttribute("mail"));
+            clsAdd.addOperation(new UMLOperation("method()"));
             // Creating GUI
             add = new ClassBox(clsAdd);
             add.getClassTitle().textProperty().addListener((observable, oldValue, newValue) -> {

@@ -10,7 +10,10 @@ import java.util.*;
  */
 public class UMLClass extends UMLClassifier {
     private boolean isAbstract;
-    private final List<UMLAttribute> attributeList;
+    private final LinkedList<UMLAttribute> attributeList;
+
+    private final LinkedList<UMLOperation> operationList;
+
     private ArrayList<Integer> activeFrom;
     private ArrayList<Integer> activeTo;
 
@@ -41,6 +44,7 @@ public class UMLClass extends UMLClassifier {
     public UMLClass(String name) {
         super(name);
         attributeList = new LinkedList<UMLAttribute>();
+        operationList = new LinkedList<UMLOperation>();
     }
 
     /**
@@ -70,14 +74,38 @@ public class UMLClass extends UMLClassifier {
     }
 
     /**
+     * Vloží metodu do modelu UML třídy
+     */
+    public boolean addOperation(UMLOperation op) {
+        System.out.println("Added " + op.getName());
+        if (operationList.contains(op)) {
+            return false;
+        } else {
+            operationList.add(op);
+            return true;
+        }
+    }
+
+    /**
      * Odstraní atribut z modelu UML třídy.
      */
     public void removeAttribute(String name) {
         for (UMLAttribute attr : attributeList) {
-            System.out.println("Attr.getName() = " + attr.getName());
+            //System.out.println("Attr.getName() = " + attr.getName());
             if (attr.getName().equals(name)) {
                 attributeList.remove(attr);
                 System.out.println("Attribute removed");
+                break;
+            }
+        }
+    }
+
+    public void removeOperation(String name) {
+        for(UMLOperation op : operationList) {
+            //System.out.println("op.getName() = " + op.getName());
+            if (op.getName().equals(name)) {
+                operationList.remove(op);
+                System.out.println("Method/operation removed");
                 break;
             }
         }
@@ -91,23 +119,14 @@ public class UMLClass extends UMLClassifier {
     }
 
     /**
-     * Přesune pozici atributu na nově zadanou
-     */
-    public int moveAttrAtPosition(UMLAttribute attr, int pos) {
-        if (attributeList.contains(attr)) {
-            attributeList.remove(getAttrPosition(attr));
-            attributeList.add(pos, attr);
-            return 0;
-        } else {
-            return -1;
-        }
-    }
-
-    /**
      * Vrátí list atributů
      */
     public List<UMLAttribute> getAttributes() {
         return attributeList;
+    }
+
+    public List<UMLOperation> getOperations() {
+        return operationList;
     }
 
     public double getX(){

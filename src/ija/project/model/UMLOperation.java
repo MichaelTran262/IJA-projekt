@@ -9,6 +9,10 @@ import java.util.List;
 public class UMLOperation extends UMLAttribute {
     private UMLAttribute[] args;
 
+    public UMLOperation(String name) {
+        super(name);
+    }
+
     public UMLOperation(String name, String type) {
         super(name, type);
     }
@@ -20,7 +24,7 @@ public class UMLOperation extends UMLAttribute {
     }
 
     public boolean addArgument(UMLAttribute arg) {
-        args = Arrays.copyOf(args, args.length + 1); //create new array from old array and allocate one more element
+        args = Arrays.copyOf(args, args.length + 1);
         args[args.length - 1] = arg;
         return true;
     }
