@@ -1123,8 +1123,8 @@ public class ClassController {
                 toString = to.getName();
             }
             // TODO: Co s těmi listy?? Vím že určují výšku, to je vše.
-            ArrayList<Integer> fromList;
-            ArrayList<Integer> toList;
+            ArrayList<Integer> fromList = sdiagram.getClassByName(fromString).getActiveFrom();
+            ArrayList<Integer> toList = sdiagram.getClassByName(toString).getActiveTo();
             if (from != null) {
                 if(!isInconsistentClass(fromString)){
                     System.out.println("Dostanu se na radek 714");
@@ -1138,8 +1138,28 @@ public class ClassController {
                     toList.add(results.toVertical);
                 }
             }
-            sdiagram.createConnection(results.methodName, fromString, toString, 1);
-            sdiagram.createConnection("return", toString, fromString, 2);
+            sdiagram.createConnection(results.methodName, fromString, toString, 1, results.fromVertical-1);
+            sdiagram.createConnection("return", toString, fromString, 2, results.toVertical-1);
+            for (UMLClass cl: sdiagram.getClasses()) {
+                ArrayList<Integer> list = new ArrayList<>();
+                for(int integer:cl.getActiveFrom()){
+                    if (integer >= results.toVertical-1)
+                        integer+=2;
+                    list.add(integer);
+                }
+                cl.setActiveFrom(list);
+                if(Objects.equals(cl.getName(), fromString))
+                    cl.getActiveFrom().add(results.fromVertical);
+                list = new ArrayList<>();
+                for(int integer:cl.getActiveTo()){
+                    if (integer >= results.toVertical-1)
+                        integer+=2;
+                    list.add(integer);
+                }
+                cl.setActiveTo(list);
+                if(Objects.equals(cl.getName(), fromString))
+                    cl.getActiveFrom().add(results.toVertical);
+            }
             setSequencePanes();
         });
     }

@@ -48,7 +48,7 @@ public class SequenceDiagram extends Element{
      * @param name Název vytvářené spojení
      * @return Vytvořené spojení
      */
-    public UMLConnection createConnection(String name, String from, String to, int type){
+    public UMLConnection createConnection(String name, String from, String to, int type, int line){
         //System.out.println("createConnection(" + name + ", " + from + ", " + to + ")");
         UMLConnection newConnection;
         UMLClass fromClass;
@@ -64,7 +64,7 @@ public class SequenceDiagram extends Element{
             toClass = getClassByName(to);
             newConnection = new UMLConnection(name, fromClass, toClass, type);
         }
-        connectionList.add(newConnection);
+        connectionList.add(line, newConnection);
         return newConnection;
     }
 

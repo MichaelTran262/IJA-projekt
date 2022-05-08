@@ -179,7 +179,7 @@ public class FileHandler {
                     String to = currOp.getString("to");
                     int typ = currOp.getInt("type");
                     String name = currOp.getString("name");
-                    diagram.createConnection(name, from, to, typ);
+                    diagram.createConnection(name, from, to, typ, j);
                 }
                 diagrams.add(diagram);
             }
