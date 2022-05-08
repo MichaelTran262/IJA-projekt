@@ -4,6 +4,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
+/**
+ * @author      Lukáš Fuis  xfuisl00
+ * @version     1.0
+ */
+
+/**
+ * Třída znázorňující volání metody v sekvenčním diagramu
+ */
 public class Operation extends Line {
     private int from;
     private int to;
@@ -14,6 +22,15 @@ public class Operation extends Line {
     private Text name;
     private boolean inconsistant;
 
+    /**
+     * Kontruktor třídy
+     * @param odkud Hodnota sloupce, ve kterém je metoda volána
+     * @param kam Hodnota sloupce, vek terém se nechází objekt jehož metoda je volána
+     * @param typ Informace o tom zda se jedná o volání nebo o odpověď
+     * @param poradi Pořadí o kolikátou se jedná zprávu
+     * @param jmeno Jméno metody
+     * @param inconsistent Informace zda se volaná metoda nachází v třídě volaného objektu
+     */
     public Operation(int odkud, int kam, int typ, int poradi, String jmeno, boolean inconsistent){
         super();
         from=odkud;
@@ -35,6 +52,7 @@ public class Operation extends Line {
     public Line getUp(){return up;}
     public Line getDown(){return down;}
     public Text getName(){return name;}
+
     private void setUpDownText(){
         if(from < to){
             up.setStartX(getEndX());

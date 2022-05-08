@@ -36,13 +36,12 @@ import javafx.fxml.FXML;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-/**
- * @author      Lukáš Fuis      <xfuisl00 @ stud.fit.vutbr.cz>
- * @version     0.5
- */
 
 /**
  *  Třída reprezentující GUI diagramu tříd
+ * @author      Lukáš Fuis      xfuisl00
+ * @author Thanh Q. Tran     xtrant02
+ * @version     1.0
  */
 public class ClassController {
     public ToggleButton deleteButton;
@@ -113,6 +112,13 @@ public class ClassController {
     Stack<Action> history = new Stack<>();
     Stack<Action> undoHistory = new Stack<>();
 
+    /**
+     * Třída reprezentující akci změny jména v diagramu
+     * Implementuje rozhraní Action
+     * @author Lukáš Fuis xfuisl00
+     * @version 1.0
+     */
+
     class EditName implements Action{
         String before;
         String after;
@@ -140,6 +146,12 @@ public class ClassController {
         }
     }
 
+    /**
+     * Třída reprezentující akci přidání nové třídy
+     * Implementuje rozhraní Action
+     * @author Lukáš Fuis xfuisl00
+     * @version 1.0     *
+     */
     class AddClass implements Action{
         AnchorPane root;
         ClassDiagram clsDiagram;
@@ -189,6 +201,12 @@ public class ClassController {
         }
     }
 
+    /**
+     * Třída reprezentující akci smazání třídy
+     * Implementuje rozhraní Action
+     * @author Lukáš Fuis xfuisl00
+     * @version 1.0     *
+     */
     class DeleteClass implements Action{
         AnchorPane root;
         ClassDiagram clsDiagram;
@@ -243,6 +261,12 @@ public class ClassController {
         }
     }
 
+    /**
+     * Třída reprezentující akci spojení tříd
+     * Implementuje rozhraní Action
+     * @author Lukáš Fuis xfuisl00
+     * @version 1.0     *
+     */
     class ConnectClasses implements Action{
         AnchorPane root;
         ArrayList<Connection> conList;
@@ -301,6 +325,10 @@ public class ClassController {
         }
     }
 
+    /**
+     * Funkce vykonávající undoable akci
+     * @author Lukáš Fuis xfuisl00
+     */
     void execute(Action action){
         history.push(action);
         action.run();
@@ -309,6 +337,10 @@ public class ClassController {
         redoButton.setDisable(true);
     }
 
+    /**
+     * Funkce provádějící akci undo
+     * @author Lukáš Fuis xfuisl00
+     */
     @FXML
     private void undo(){
         Action undo = history.pop();
@@ -319,6 +351,10 @@ public class ClassController {
             undoButton.setDisable(true);
     }
 
+    /**
+     * Funkce provádějící akci redo
+     * @author Lukáš Fuis xfuisl00
+     */
     @FXML
     private void redo(){
         Action redo = undoHistory.pop();
@@ -344,6 +380,7 @@ public class ClassController {
     /**
      * Funkce přidává vlastnoti interakce dané GUI komponenty
      * @param node GUI komponenta, ke které se přidají vlastnosti interakce
+     * @author Thanh Q. Tran     xtrant02
      */
     private void draggable(Node node) {
         final Position pos = new Position();
@@ -430,7 +467,8 @@ public class ClassController {
     }
 
     /**
-     * Funkce změní uživatelský mod na Connect
+     * Funkce změní uživatelský mod na line Connect
+     * @author Thanh Q. Tran     xtrant02
      */
     public void changeToLineConnect(){
         arrowType = ArrowType.line;
@@ -450,7 +488,8 @@ public class ClassController {
     }
 
     /**
-     * Funkce změní uživatelský mod na Connect
+     * Funkce změní uživatelský mod na composition Connect
+     * @author Thanh Q. Tran     xtrant02
      */
     public void changeToCompositionConnect(){
         arrowType = ArrowType.composition;
@@ -469,6 +508,10 @@ public class ClassController {
         }
     }
 
+    /**
+     * Funkce změní uživatelský mod na aggregation Connect
+     * @author Thanh Q. Tran     xtrant02
+     */
     public void changeToAggregationConnect(){
         arrowType = ArrowType.aggregation;
         textMode.setText("Mode:\n Connect " + arrowType.name());
@@ -486,6 +529,10 @@ public class ClassController {
         }
     }
 
+    /**
+     * Funkce změní uživatelský mod na inheritance Connect
+     * @author Thanh Q. Tran     xtrant02
+     */
     public void changeToInheritanceConnect(){
         arrowType = ArrowType.inheritance;
         textMode.setText("Mode:\n Connect " + arrowType.name());
@@ -503,6 +550,10 @@ public class ClassController {
         }
     }
 
+    /**
+     * Funkce změní uživatelský mod na dependency Connect
+     * @author Thanh Q. Tran     xtrant02
+     */
     public void changeToDependencyConnect(){
         arrowType = ArrowType.dependency;
         textMode.setText("Mode:\n Connect " + arrowType.name());
@@ -524,6 +575,7 @@ public class ClassController {
     /**
      * Funkce přidá dané komponentě vlastnost mít vazby
      * @param node komponenta, která získá schopnost mít vazbu
+     * @author Thanh Q. Tran     xtrant02
      */
     private void connectable(Node node) {
         node.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -557,6 +609,11 @@ public class ClassController {
         coordinatesText.setText("Mouse: X = " + event.getX() + ", Y = " + event.getY());
     }
 
+    /**
+     * Funkce načte ze souboru třídní a sekvenční diagramy
+     * @author Thanh Q. Tran     xtrant02
+     * @author      Lukáš Fuis      xfuisl00
+     */
     @FXML
     private void loadFile() throws IOException {
         number = 1;
@@ -621,6 +678,11 @@ public class ClassController {
         }
     }
 
+    /**
+     * Funkce uloží třídní a sekvenční diagramy do souboru
+     * @author Thanh Q. Tran     xtrant02
+     * @author      Lukáš Fuis      xfuisl00
+     */
     @FXML
     private void saveToFile() {
         FileChooser fc = new FileChooser();
@@ -694,6 +756,10 @@ public class ClassController {
         }
     }
 
+    /**
+     * Funkce přepne z diagramu tříd na sekvenční diagram
+     * @author      Lukáš Fuis      xfuisl00
+     */
     public void switchToSequence(ActionEvent event) throws IOException {
         Scene currScene = ((Node) event.getSource()).getScene();
         Stage thisStage = (Stage) currScene.getWindow();
@@ -708,6 +774,10 @@ public class ClassController {
         activeScene = "Sequence";
     }
 
+    /**
+     * Funkce přepne ze sekvenčního diagramu na diagram tříd
+     * @author      Lukáš Fuis      xfuisl00
+     */
     public void switchToClass(ActionEvent event) throws IOException {
         Scene currScene = ((Node) event.getSource()).getScene();
         Stage thisStage = (Stage) currScene.getWindow();
@@ -722,6 +792,11 @@ public class ClassController {
         activeScene = "Class";
     }
 
+    /**
+     * Třída reprezentující výsledek vrácený při přidávání objektu v sekvenčním diagramu
+     * @author Thanh Q. Tran     xtrant02
+     * @version 1.0     *
+     */
     private static class Results {
         String objectName;
         String resultClass;
@@ -731,6 +806,10 @@ public class ClassController {
         }
     }
 
+    /**
+     * Funkce přidávající třídu v sekvenčním diagramu
+     * @author Thanh Q. Tran     xtrant02
+     */
     public void sequenceAddClass() {
         ArrayList<String> dialogData = new ArrayList<>();
         dialogData.add("User");
@@ -760,6 +839,11 @@ public class ClassController {
         });
     }
 
+    /**
+     * Třída reprezentující výsledek vrácený při vytváření spojení v sekvenčním diagramu
+     * @author Thanh Q. Tran     xtrant02
+     * @version 1.0     *
+     */
     private static class ResultsActivity {
         String methodName;
         int fromHorizontal;
@@ -775,6 +859,11 @@ public class ClassController {
         }
     }
 
+    /**
+     * Funkce přidávající aktivitu a spojení v sekvenčním diagramu
+     * @author Thanh Q. Tran     xtrant02
+     * @author      Lukáš Fuis      xfuisl00
+     */
     public void sequenceAddActivity() {
         ArrayList<String> dialogData = new ArrayList<>();
         dialogData.add("<<create>>");
@@ -850,6 +939,11 @@ public class ClassController {
         });
     }
 
+
+    /**
+     * Funkce na aktualizaci sekvenčního diagramu
+     * @author      Lukáš Fuis      xfuisl00
+     */
     public void setSequencePanes(){
         int i = 0;
         //System.out.println("setSequencePanes: Updating sequence diagram");
@@ -915,7 +1009,7 @@ public class ClassController {
                 pane.getChildren().addAll(operation, operation.getName(), operation.getUp(), operation.getDown());
                 operation.toBack();
             }
-            pane.getChildren().addAll(drawActor("User"));
+            pane.getChildren().addAll(drawActor());
             pane.setId(Integer.toString(i));
             //pravitko
             final int width = 100;
@@ -945,6 +1039,10 @@ public class ClassController {
         //showButton.setDisable(true);
     }
 
+    /**
+     * Funkce přepínající mezi sekvenčními diagramy dopředu
+     * @author      Lukáš Fuis      xfuisl00
+     */
     public void nextDiagram(){
         List<Node> clone = new ArrayList<>();
         if(sequencePanes.size() == 1)
@@ -963,6 +1061,10 @@ public class ClassController {
         sequenceAnchorPane.getChildren().addAll(sequencePanes.get(currentPane).getChildrenUnmodifiable());
     }
 
+    /**
+     * Funkce přepínající mezi sekvenčními diagramy dozadu
+     * @author      Lukáš Fuis      xfuisl00
+     */
     public void previousDiagram(){
         List<Node> clone = new ArrayList<>();
         if(sequencePanes.size() == 1)
@@ -981,9 +1083,15 @@ public class ClassController {
         sequenceAnchorPane.getChildren().addAll(sequencePanes.get(currentPane).getChildrenUnmodifiable());
     }
 
-    public List<Node> drawActor(String name){
+
+    /**
+     * Funkce na vytvoření listu Node znázorňující actora
+     * @author      Lukáš Fuis      xfuisl00
+     * @return List instancí třídy Node obsahující nody znázorňující actora
+     */
+    public List<Node> drawActor(){
         System.out.println("drawActor()");
-        List<Node> list = new ArrayList<Node>();
+        List<Node> list = new ArrayList<>();
         Circle head = new Circle(7.5);
         head.setCenterX(70);
         head.setCenterY(90);
@@ -1005,6 +1113,13 @@ public class ClassController {
         return list;
     }
 
+    /**
+     * Funkce na vytvoření listu Node znázorňující objekt v sekvenčním diagramu
+     * @author      Lukáš Fuis      xfuisl00
+     * @param name Jméno třídy vytvářeného objektu
+     * @param x souřadnice na ose X kam se má objekt přidat
+     * @return List instancí třídy Node obsahující objekt
+     */
     public List<Node> createObjects(String name, int x){
         List<Node> list = new ArrayList<Node>();
         Text actor = new Text(name);
@@ -1025,6 +1140,13 @@ public class ClassController {
         return list;
     }
 
+    /**
+     * Funkce na vytvoření listu Node znázorňující čas v sekvenčním diagramu
+     * @author      Lukáš Fuis      xfuisl00
+     * @param max Hodnota znázorňující kolik akcí se v diagramu vykoná
+     * @param count Počet objektů, pro které se má osa vytvořit
+     * @return List instancí třídy Node obsahující nody znázorňující čas
+     */
     public List<Node> createLines(int max, int count){
         List<Node> list = new ArrayList<Node>();
         int X = 70;
@@ -1043,6 +1165,15 @@ public class ClassController {
         return list;
     }
 
+
+    /**
+     * Funkce na vytvoření Node typu Rectangle znázorňující aktivitu objektu v sekvenčním diagramu
+     * @author      Lukáš Fuis      xfuisl00
+     * @param poradi Informace, ve kterém sloupci se objekt nachází
+     * @param from Informace na kterém řádku začíná aktivita objektu
+     * @param to Informace na kterém řádku končí aktivita objektu
+     * @return Vrací instanci třídy Rectangle znázorňující aktivitu
+     */
     public Rectangle createActivity(int poradi, int from, int to){
         int X = 65+poradi*100;
         int Ye = 135+(from-1)*60;
@@ -1057,8 +1188,22 @@ public class ClassController {
         return activity;
     }
 
+    /**
+     * Funkce kontrolující zda je objekt třídy s názvem name v třídním diagramu
+     * @author      Lukáš Fuis      xfuisl00
+     * @param name Jméno třídy objektu v sekvenčním diagramu
+     * @return Vrací zda je třída v sekvenčním diagramu nekonzistentní
+     */
     public boolean isInconsistentClass(String name){return diagram.getClassByName(name) == null;}
 
+    /**
+     * Funkce kontrolující zda je metoda ve třídě implementována
+     * @author      Lukáš Fuis      xfuisl00
+     * @param className Jméno třídy objektu, jehož metoda je volána
+     * @param methodName Jméno metody, která je volána
+     * @param type Typ metody, která je volána
+     * @return Vrací zda je metoda v sekvenčním diagramu nekonzistentní
+     */
     public boolean isInconsistentMethod(String className, String methodName, int type){
         if(type == 2)
             return  false;

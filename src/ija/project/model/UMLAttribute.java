@@ -1,5 +1,7 @@
 package ija.project.model;
 
+import java.util.regex.Pattern;
+
 /**
  * Třída reprezentuje atribut, který má své jméno a typ.
  * Je odvozena (rozšiřuje) od třídy Element.
@@ -46,5 +48,16 @@ public class UMLAttribute extends  Element {
             return name + ":<" + type + ">";
         }
         return name;
+    }
+
+
+    public Boolean hasModifier() {
+        if(Pattern.matches("[\\+\\-\\#\\~].*", name)) {
+            System.out.println(name + "has a modifier");
+            return true;
+        } else {
+            System.out.println(name + " does not have a modifier.");
+            return false;
+        }
     }
 }

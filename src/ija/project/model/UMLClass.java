@@ -8,7 +8,7 @@ import java.util.*;
  * Obsahuje seznam atributů a operací (metod).
  * Třída může být abstraktní.
  */
-public class UMLClass extends UMLClassifier {
+public class UMLClass extends Element {
     private boolean isAbstract;
     private final LinkedList<UMLAttribute> attributeList;
 

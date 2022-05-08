@@ -7,14 +7,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
-/**
- * @author      Thanh Q. Tran     <xtrant02 @ stud.fit.vutbr.cz>
- * @version     0.5
- */
 
 /**
  *  Třída reprezentující vazby mezi dvěma UML třidami, které jsou dále reprezentovány ve třídě ClassBox.
  *  Je odvozen od třídy Line, tudíž kreslí čáru mezi dvěma ClassBox instancemi
+ * @author      Thanh Q. Tran     xtrant02
+ * @version     1.0
  */
 public class Connection extends Line {
     private ClassBox start;
@@ -47,6 +45,12 @@ public class Connection extends Line {
         arrowHead = new Polygon();
     }
 
+    /**
+     * Konstruktor třidy Connection
+     * @param start instance Classbox, odkud vazba začíná
+     * @param end instance Classbox, kde vazba končí
+     * @param type informce o typu spojení, které se má vytvořit
+     */
     public Connection(ClassBox start, ClassBox end, String type){
         super();
         this.startXProperty().bind(start.layoutXProperty().add(start.widthProperty().divide(2)));
@@ -62,6 +66,13 @@ public class Connection extends Line {
         createArrowHead(arrowType);
     }
 
+    /**
+     * Funkce vytvářející Node znázorňující specifický typ spojení
+     * @param x Hodnota souřadnice na ose X
+     * @param y Hodnota souřadnice na ose Y
+     * @param rectHeight Výška obdélníku
+     * @param rectWidth Šířka obdélníku
+     */
     public void drawArrow(double x, double y, double rectHeight, double rectWidth) {
         Position arrowTipPosition = getIntersection(x, y, rectHeight, rectWidth);
         double theta = Math.atan2((this.getEndY() - y),(this.getEndX() - x));
@@ -115,6 +126,14 @@ public class Connection extends Line {
         }
     }
 
+    /**
+     * Funkce získávající místo dotyku, kam je následně vložena šipka
+     * @param x Hodnota souřadnice na ose X
+     * @param y Hodnota souřadnice na ose Y
+     * @param rectHeight Výška obdélníku
+     * @param rectWidth Šířka obdélníku
+     * @return Instance třídy Position obsahující bod průniku okraje obdélníku
+     */
     public Position getIntersection(double x, double y, double rectHeight, double rectWidth){
         Position pos = new Position();
         Position i = new Position();
@@ -147,6 +166,10 @@ public class Connection extends Line {
         return i;
     }
 
+    /**
+     * Funkce vytvářející specifický typ šipky
+     * @param type Informace o typu šipky
+     */
     public void createArrowHead(String type) {
         arrowType = type;
         this.endXProperty().addListener((observableValue, number, t1) -> {
@@ -173,7 +196,6 @@ public class Connection extends Line {
 
     /**
      * Funkce vrátí Classbox instanci, která je začátkem vazby instance třídy Connection.
-     * @param start Classbox instanci, která je začátkem vazby
      */
     public ClassBox getStart() {
         return start;
@@ -181,7 +203,6 @@ public class Connection extends Line {
 
     /**
      * Funkce vrátí Classbox instanci, která je koncem vazby instance třídy Connection.
-     * @param start Classbox instanci, která je koncem vazby
      */
     public ClassBox getEnd() {
         return end;

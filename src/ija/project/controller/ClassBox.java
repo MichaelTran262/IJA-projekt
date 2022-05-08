@@ -9,10 +9,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -23,17 +20,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
+import javax.tools.Tool;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author      Thanh Q. Tran     <xtrant02 @ stud.fit.vutbr.cz>
- * @author      Lukáš Fuis      <xfuisl00 @ stud.fit.vutbr.cz>
- * @version     0.5
- */
-
-/**
  *  Třída reprezentující GUI třídy UMLClass
+ * @author      Thanh Q. Tran     xtrant02
+ * @version     1
  */
 public class ClassBox extends StackPane {
     private UMLClass cl;
@@ -86,12 +80,12 @@ public class ClassBox extends StackPane {
         connections.add(connection);
     }
 
+    /**
+     * Odstraní instanci třidy reprezentující spojení mezi dvěma třidami
+     * @param connection Proměnná třidy Connection, která je odstraněna
+     */
     public void deleteConnection(Connection connection){ connections.remove(connection);}
 
-    /**
-     * Konstruktor třidy ClassBox, nastavuje vlastnosti GUI komponentů
-     * @param connection Proměnná třidy Connection, která je ,,propojena'' mezi dvěma ClassBox instancemi
-     */
     public ArrayList<Connection> getConnections() {
         return connections;
     }
@@ -121,8 +115,8 @@ public class ClassBox extends StackPane {
     }
 
     /**
-     * Funkce přetěžuje výchozí contextMenu třídy TextField a přidává nový.
-     * @param node komponenta, do které se přidá contextMenu
+     * Funkce přetěžuje výchozí contextMenu třídy TextField pro atributy.
+     * @param tf TextField obsahující jméno atributu, který je odstraněn při kliknutí na "Smazat atribut"
      */
     public void setAttributeContextMenu(TextField tf){
         ContextMenu contextMenu = new ContextMenu();
@@ -138,6 +132,10 @@ public class ClassBox extends StackPane {
         tf.setContextMenu(contextMenu);
     }
 
+    /**
+     * Funkce přetěžuje výchozí contextMenu třídy TextField pro metody.
+     * @param tf TextField obsahující jméno metody, která je odstraněna při kliknutí na "Smazat metodu"
+     */
     public void setMethodContextMenu(TextField tf) {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem1 = new MenuItem("Přidat metodu");
@@ -167,12 +165,19 @@ public class ClassBox extends StackPane {
         update();
     }
 
+    /**
+     * Přidá metodu třídě znázorňované tímto ClassBoxem
+     */
     public void addClassOperation() {
         this.cl.addOperation(new UMLOperation("new_method()"));
         this.getChildren().clear();
         update();
     }
 
+    /**
+     * Přidá metodu třídě znázorňované tímto ClassBoxem
+     * @param opName Jméno nové metody
+     */
     public void addClassOperation(String opName) {
         this.cl.addOperation(new UMLOperation(opName));
         this.getChildren().clear();
@@ -180,8 +185,8 @@ public class ClassBox extends StackPane {
     }
 
     /**
-     * Funkce odstraní atribut z třídy reprezentující model třídy z jazyka UMLenu
-     * @param name jméno atributu, která bude odstraněna z instance UML třídy
+     * Funkce odstraní atribut z instance třídy tohoto ClassBoxu
+     * @param name jméno atributu, který bude odstraněn
      */
     public void removeClassAttribute(String name) {
         this.cl.removeAttribute(name);
@@ -189,6 +194,10 @@ public class ClassBox extends StackPane {
         update();
     }
 
+    /**
+     * Funkce odstraní metodu z instance třídy tohoto ClassBoxu
+     * @param name jméno metody, která bude odstraněna
+     */
     public void removeClassOperation(String name) {
         this.cl.removeOperation(name);
         this.getChildren().clear();
@@ -200,8 +209,7 @@ public class ClassBox extends StackPane {
     }
 
     /**
-     * Funkce změní jméno atributu (zatím nefunkční)
-     * @param name jméno atributu, která bude změnena v instanci UML třídy
+     * Funkce aktualizující ClassBox po změně
      */
     public void update(){
         attributes.clear();
@@ -213,6 +221,14 @@ public class ClassBox extends StackPane {
             attrText.setMaxWidth(rectangle.getWidth() - 20);
             attrText.textProperty().addListener((observableValue, oldValue, newValue) -> {
                 attr.setName(newValue);
+                if(!attr.hasModifier()){
+                    attrText.setStyle("-fx-text-inner-color: red");
+                    Tooltip tooltip = new Tooltip("Chybí modifikátor přístupu");
+                    attrText.setTooltip(tooltip);
+                } else {
+                    attrText.setStyle("-fx-text-inner-color: black");
+                    attrText.setTooltip(null);
+                }
                 //System.out.println("textfield changed from " + oldValue + " to " + attr.getName());
             });
             attributes.add(attrText);
@@ -232,6 +248,14 @@ public class ClassBox extends StackPane {
             methodText.setMaxWidth(rectangle.getWidth() - 20);
             methodText.textProperty().addListener((observableValue, oldValue, newValue) -> {
                 op.setName(newValue);
+                if(!op.hasModifier()){
+                    methodText.setStyle("-fx-text-inner-color: red");
+                    Tooltip tooltip = new Tooltip("Chybí modifikátor přístupu");
+                    methodText.setTooltip(tooltip);
+                } else {
+                    methodText.setStyle("-fx-text-inner-color: black");
+                    methodText.setTooltip(null);
+                }
                 //System.out.println("textfield changed from " + oldValue + " to " + attr.getName());
             });
             methods.add(methodText);

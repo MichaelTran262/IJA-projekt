@@ -18,6 +18,12 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/**
+ * Třída načítající diagramy ze souboru
+ * @author      Lukáš Fuis  xfuisl00
+ * @author      Thanh Q. Tran   xtrant02
+ * @version     1.0
+*/
 
 public class FileHandler {
 
@@ -44,7 +50,9 @@ public class FileHandler {
     }
 
     /**
-     * Funkce zparsuje soubor a vrátí třídy
+     * Funkce zparsuje soubor a vrátí ClassDiagram obsahující diagram tříd
+     *  @author      Thanh Q. Tran     xtrant02
+     * @return Instance třídy ClassDiagram
      */
     public ClassDiagram parseClassDiagram() {
         
@@ -80,6 +88,11 @@ public class FileHandler {
         return newDiagram;
     }
 
+    /**
+     * Funkce zparsuje spojení a vrátí list Connection obsahující spojení mezi třídami
+     *   @author      Thanh Q. Tran     xtrant02
+     * @return ArrayList instancí třídy Connection
+     */
     public ArrayList<Connection> parseConnections(List<ClassBox> classesList) {
         lineList.clear();
         try {
@@ -114,7 +127,12 @@ public class FileHandler {
         return lineList;
     }
 
-
+    /**
+     * Funkce zparsuje soubor a vrátí list SequenceDiagram obsahující sekvenční diagramy
+     * @param classDiagram Diagram tříd pro který se vytváří sekvenční diagram
+     * @author      Lukáš Fuis      xfuisl00
+     * @return List instancí třídy SequenceDiagram
+     */
     public List<SequenceDiagram> parseSequence(ClassDiagram classDiagram) {
 
         try {
