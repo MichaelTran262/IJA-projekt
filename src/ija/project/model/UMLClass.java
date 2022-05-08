@@ -14,6 +14,10 @@ public class UMLClass extends UMLClassifier {
     private ArrayList<Integer> activeFrom;
     private ArrayList<Integer> activeTo;
 
+    private double x;
+
+    private double y;
+
     public ArrayList<Integer> getActiveTo() {
         return activeTo;
     }
@@ -104,5 +108,21 @@ public class UMLClass extends UMLClassifier {
      */
     public List<UMLAttribute> getAttributes() {
         return attributeList;
+    }
+
+    public double getX(){
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY(){
+        return y;
+    }
+
+    public void setY(double y){
+        this.y = y;
     }
 }

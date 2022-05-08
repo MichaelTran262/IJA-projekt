@@ -2,6 +2,7 @@ package ija.project.controller;
 
 import ija.project.model.*;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
@@ -37,6 +38,10 @@ public class FileHandler {
         System.out.println(file.getAbsolutePath());
     }
 
+    private static class Position {
+        double x;
+        double y;
+    }
 
     /**
      * Funkce zparsuje soubor a vrátí třídy
@@ -51,8 +56,17 @@ public class FileHandler {
             JSONArray classes = json.getJSONArray("classes");
             for(int i = 0; i < classes.length(); i++) {
                 String classname = classes.getJSONObject(i).getString("name");
-                JSONArray attributes = classes.getJSONObject(i).getJSONArray("attributes");
                 UMLClass cl = newDiagram.createClass(classname);
+                try{
+                    int pos_x = classes.getJSONObject(i).getInt("pos_x");
+                    int pos_y = classes.getJSONObject(i).getInt("pos_y");
+                    //Adding positions if exists
+                    cl.setX(pos_x);
+                    cl.setY(pos_y);
+                } catch (Exception e) {
+                    System.out.println("Missing pos_x or pos_y");
+                }
+                JSONArray attributes = classes.getJSONObject(i).getJSONArray("attributes");
                 //Adding attributes
                 for(int j = 0; j < attributes.length(); j++) {
                     UMLAttribute attr = new UMLAttribute(attributes.getString(j));
@@ -74,17 +88,21 @@ public class FileHandler {
             // parse connections
             JSONArray lines = json.getJSONArray("connections");
             for(int i = 0; i < lines.length(); i++) {
-                String line = lines.getString(i);
-                String[] nodes = line.split("--");
+                String from = lines.getJSONObject(i).getString("start");
+                String to = lines.getJSONObject(i).getString("end");
+                String type = lines.getJSONObject(i).getString("type");
                 ClassBox start = null, end = null;
                 for (ClassBox box : classesList) {
-                    if (nodes[0].equals(box.getClassName())) {
+                    if (from.equals(box.getClassName())) {
                         start = box;
-                    } else if (nodes[1].equals(box.getClassName())){
+                    } else if (to.equals(box.getClassName())){
                         end = box;
                     }
                 }
-                Connection conn = new Connection(start, end);
+                if(start == null || end == null) {
+                    System.out.println("Missing node for connection");
+                }
+                Connection conn = new Connection(start, end, type);
                 start.appendConnection(conn);
                 end.appendConnection(conn);
                 conn.toBack();

@@ -1,6 +1,8 @@
 {
     "classes": [
         {
+            "pos_y": 124,
+            "pos_x": 150,
             "name": "class01",
             "attributes": [
                 "id:integer",
@@ -8,6 +10,8 @@
             ]
         },
         {
+            "pos_y": 403,
+            "pos_x": 516,
             "name": "class02",
             "attributes": [
                 "id:integer",
@@ -15,9 +19,11 @@
             ]
         }
     ],
-    "connections": [
-        "class01--class02"
-    ],
+    "connections": [{
+        "start": "class01",
+        "end": "class02",
+        "type": "inheritance"
+    }],
     "sequence": [
         {
             "name": "Diagram1",

@@ -5,9 +5,12 @@ import ija.project.model.UMLAttribute;
 import ija.project.model.UMLClass;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -33,7 +36,9 @@ public class ClassBox extends StackPane {
     private TextField classTitle;
     private ArrayList<TextField> attributes = new ArrayList<TextField>();
     private ArrayList<Connection> connections = new ArrayList<Connection>();
-    private Rectangle rectangle = new Rectangle(100, 160, Color.WHITE);
+    private Rectangle rectangle = new Rectangle(200, 160, Color.WHITE);
+
+    private Separator separator = new Separator();
 
     /**
      * Konstruktor třidy ClassBox, nastavuje vlastnosti GUI komponentů
@@ -45,9 +50,13 @@ public class ClassBox extends StackPane {
         rectangle.setStyle("-fx-fill: #ffffff; -fx-stroke: #000000; -fx-border-color: #000000; -fx-stroke-width: 1;");
         this.setId(cl.getName());
         classTitle = new TextField(this.getId());
-        classTitle.setTranslateY(-50);
-        classTitle.setFont(Font.font("Verdana", FontWeight.BOLD,11));
-        classTitle.setMaxWidth(rectangle.getWidth()-2);
+        classTitle.setAlignment(Pos.CENTER);
+        separator.setOrientation(Orientation.HORIZONTAL);
+        separator.setTranslateY(-40);
+        separator.setStyle("-fx-border-style: solid; -fx-border-color: black");
+        classTitle.setTranslateY(-60);
+        classTitle.setFont(Font.font("Verdana", FontWeight.BOLD,13));
+        classTitle.setMaxWidth(rectangle.getWidth()-8);
         update();
         this.setContextMenu(this);
     }
@@ -158,7 +167,7 @@ public class ClassBox extends StackPane {
             posY += 27;
         }
         rectangle.toBack();
-        this.getChildren().addAll(rectangle, classTitle);
+        this.getChildren().addAll(rectangle, classTitle, separator);
         for (TextField attr : attributes) {
             this.getChildren().add(attr);
         }

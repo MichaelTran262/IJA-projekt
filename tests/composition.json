@@ -1,0 +1,27 @@
+{
+    "classes": [
+        {
+            "pos_y": 124,
+            "pos_x": 150,
+            "name": "Title 1",
+            "attributes": [
+                "jméno",
+                "mail"
+            ]
+        },
+        {
+            "pos_y": 403,
+            "pos_x": 516,
+            "name": "Title 2",
+            "attributes": [
+                "jméno",
+                "mail"
+            ]
+        }
+    ],
+    "connections": [{
+        "start": "Title 1",
+        "end": "Title 2",
+        "type": "composition"
+    }]
+}

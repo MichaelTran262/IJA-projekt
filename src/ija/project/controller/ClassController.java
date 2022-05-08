@@ -167,7 +167,7 @@ public class ClassController {
             draggable(add);
             connectable(add);
             add.toFront();
-            add.relocate(120*number, 10*number);
+            add.relocate(120, 10);
             anchorPane.getChildren().add(add);
             seznam.add(add);
             number++;
@@ -262,6 +262,7 @@ public class ClassController {
             root.getChildren().add(connect);
             // šipka
             if(arrowType != ArrowType.line) {
+                System.out.println(arrowType.name());
                 connect.createArrowHead(arrowType.name());
                 root.getChildren().add(connect.getArrowHead());
             }
@@ -598,9 +599,9 @@ public class ClassController {
                     seznam.add(rectangle);
                     anchorPane.getChildren().add(rectangle);
                     rectangle.toFront();
-                    rectangle.relocate(x, y);
-                    x += 200;
-                    y += 10;
+                    rectangle.relocate(cl.getX(), cl.getY());
+                    //x += 200;
+                    //y += 10;
                 }
                 for (Connection conn : fileHandler.parseConnections(seznam)){
                     anchorPane.getChildren().addAll(conn,conn.getArrowHead());
@@ -628,7 +629,10 @@ public class ClassController {
             JSONArray classes = new JSONArray();
             for (ClassBox cl : seznam) {
                 JSONObject tmp = new JSONObject();
+                System.out.println("HERE");
                 tmp.put("name", cl.getClassName());
+                tmp.put("pos_x", cl.getLayoutX());
+                tmp.put("pos_y", cl.getLayoutY());
                 List<UMLAttribute> attributes = cl.getClassAttributes();
                 JSONArray jsonAttributeArray = new JSONArray();
                 for (UMLAttribute attr : attributes) {
@@ -639,39 +643,46 @@ public class ClassController {
             }
             json.put("classes", classes);
             JSONArray sequence = new JSONArray();
-            for (SequenceDiagram sdiagram:sequenceDiagrams){
-                JSONObject tmp = new JSONObject();
-                tmp.put("name", sdiagram.getName());
-                JSONArray objects = new JSONArray();
-                for (UMLClass cl:sdiagram.getClasses()){
-                    JSONObject tridy = new JSONObject();
-                    tridy.put("name",cl.getName());
-                    tridy.put("start", cl.getActiveFrom());
-                    tridy.put("end", cl.getActiveTo());
-                    objects.put(tridy);
+            if(sequenceDiagrams != null) {
+                for (SequenceDiagram sdiagram:sequenceDiagrams){
+                    JSONObject tmp = new JSONObject();
+                    tmp.put("name", sdiagram.getName());
+                    JSONArray objects = new JSONArray();
+                    for (UMLClass cl:sdiagram.getClasses()){
+                        JSONObject tridy = new JSONObject();
+                        tridy.put("name",cl.getName());
+                        tridy.put("start", cl.getActiveFrom());
+                        tridy.put("end", cl.getActiveTo());
+                        objects.put(tridy);
+                    }
+                    tmp.put("objects", objects);
+                    JSONArray operations = new JSONArray();
+                    for(UMLConnection con:sdiagram.getConnections()){
+                        JSONObject operace = new JSONObject();
+                        operace.put("from", con.getFrom());
+                        operace.put("to", con.getTo());
+                        operace.put("type", con.getType());
+                        operace.put("name", con.getName());
+                        operations.put(operace);
+                    }
+                    tmp.put("operations",operations);
+                    sequence.put(tmp);
                 }
-                tmp.put("objects", objects);
-                JSONArray operations = new JSONArray();
-                for(UMLConnection con:sdiagram.getConnections()){
-                    JSONObject operace = new JSONObject();
-                    operace.put("from", con.getFrom());
-                    operace.put("to", con.getTo());
-                    operace.put("type", con.getType());
-                    operace.put("name", con.getName());
-                    operations.put(operace);
-                }
-                tmp.put("operations",operations);
-                sequence.put(tmp);
+                json.put("sequence", sequence);
             }
-            json.put("sequence", sequence);
+
             JSONArray jsonConnections = new JSONArray();
             for (Connection conn : connections) {
-                String connectionString = conn.getStart().getClassName() + "--" + conn.getEnd().getClassName();
-                jsonConnections.put(connectionString);
+                String arrowType = conn.getArrowType();
+                String connectionString = new String("line");
+                JSONObject tmp = new JSONObject();
+                tmp.put("start", conn.getStart().getClassName());
+                tmp.put("end", conn.getEnd().getClassName());
+                tmp.put("type", arrowType);
+                jsonConnections.put(tmp);
             }
             json.put("connections", jsonConnections);
-            String toFileString = json.toString();
-            System.out.println(toFileString);
+            String toFileString = json.toString(4);
             try {
                 PrintWriter printWriter = new PrintWriter(file);
                 printWriter.write(toFileString);

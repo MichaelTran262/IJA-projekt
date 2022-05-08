@@ -44,13 +44,22 @@ public class Connection extends Line {
         this.setStrokeWidth(2);
         this.start = start;
         this.end = end;
-        Position tip = getIntersection(this.getStartX(), this.getStartY(), this.end.getHeight(), this.end.getWidth());
         arrowHead = new Polygon();
-        arrowHead.getPoints().addAll(
-                tip.x, tip.y,
-                tip.x+25,tip.y+25,
-                tip.x-25,tip.y+25
-        );
+    }
+
+    public Connection(ClassBox start, ClassBox end, String type){
+        super();
+        this.startXProperty().bind(start.layoutXProperty().add(start.widthProperty().divide(2)));
+        this.startYProperty().bind(start.layoutYProperty().add(start.heightProperty().divide(2)));
+        this.endXProperty().bind(end.layoutXProperty().add(end.widthProperty().divide(2)));
+        this.endYProperty().bind(end.layoutYProperty().add(end.heightProperty().divide(2)));
+        this.setStroke(Color.BLACK);
+        this.setStrokeWidth(2);
+        this.start = start;
+        this.end = end;
+        this.arrowType = type;
+        arrowHead = new Polygon();
+        createArrowHead(arrowType);
     }
 
     public void drawArrow(double x, double y, double rectHeight, double rectWidth) {
@@ -176,5 +185,9 @@ public class Connection extends Line {
      */
     public ClassBox getEnd() {
         return end;
+    }
+
+    public String getArrowType() {
+        return arrowType;
     }
 }

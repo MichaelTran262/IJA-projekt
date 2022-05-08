@@ -1,0 +1,90 @@
+{
+    "classes": [
+        {
+            "pos_y": 46,
+            "pos_x": 328,
+            "name": "Element",
+            "attributes": [
+                "+name: String",
+                "+Element(name:String)",
+                "+getName(): String",
+                "+rename(name:String): void"
+            ]
+        },
+        {
+            "pos_y": 318,
+            "pos_x": 328,
+            "name": "UMLClassffier",
+            "attributes": [
+                "+UMLClassifier(name:String)",
+                "+isUserDefined(): boolean"
+            ]
+        },
+        {
+            "pos_y": 316,
+            "pos_x": 623,
+            "name": "ClassDiagram",
+            "attributes": [
+                "+classes: List<UMLClassifier>",
+                "+createClass()",
+                "+ClassifierForName()"
+            ]
+        },
+        {
+            "pos_y": 317,
+            "pos_x": 44,
+            "name": "UMLAttribute",
+            "attributes": [
+                "+UMLClassifier",
+                "+getType"
+            ]
+        },
+        {
+            "pos_y": 544,
+            "pos_x": 332,
+            "name": "UMLClass",
+            "attributes": [
+                "+attributes: List",
+                "+addAttribute()",
+                "+getAttrPosition()"
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "start": "UMLClassffier",
+            "end": "UMLClass",
+            "type": "inheritance"
+        },
+        {
+            "start": "UMLAttribute",
+            "end": "UMLClass",
+            "type": "dependency"
+        },
+        {
+            "start": "Element",
+            "end": "UMLClassffier",
+            "type": "aggregation"
+        },
+        {
+            "start": "Element",
+            "end": "UMLAttribute",
+            "type": "aggregation"
+        },
+        {
+            "start": "Element",
+            "end": "ClassDiagram",
+            "type": "aggregation"
+        },
+        {
+            "start": "UMLClassffier",
+            "end": "UMLAttribute",
+            "type": "dependency"
+        },
+        {
+            "start": "UMLClassffier",
+            "end": "ClassDiagram",
+            "type": "dependency"
+        }
+    ]
+}
