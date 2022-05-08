@@ -80,6 +80,16 @@ public class FileHandler {
                     UMLAttribute attr = new UMLAttribute(attributes.getString(j));
                     cl.addAttribute(attr);
                 }
+                try {
+                    JSONArray methodsArray = classes.getJSONObject(i).getJSONArray("methods");
+                    for(int j = 0; j < methodsArray.length(); j++) {
+                        UMLOperation op = new UMLOperation(methodsArray.getString(j));
+                        cl.addOperation(op);
+                    }
+                } catch (Exception e) {
+                    System.out.println("Chybi metody");
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,7 +128,7 @@ public class FileHandler {
                 Connection conn = new Connection(start, end, type);
                 start.appendConnection(conn);
                 end.appendConnection(conn);
-                conn.toBack();
+                //conn.toBack();
                 lineList.add(conn);
             }
         } catch (Exception e) {

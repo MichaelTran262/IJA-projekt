@@ -617,9 +617,6 @@ public class ClassController {
     @FXML
     private void loadFile() throws IOException {
         number = 1;
-        anchorPane.getChildren().clear();
-        seznam.clear();
-        connections.clear();
         FileChooser fc = new FileChooser();
         File selectedFile = fc.showOpenDialog(null);
         selected = null;
@@ -635,6 +632,9 @@ public class ClassController {
         y = 10;
         if (selectedFile != null) {
             try {
+                anchorPane.getChildren().clear();
+                seznam.clear();
+                connections.clear();
                 history.clear();
                 undoButton.setDisable(true);
                 redoButton.setDisable(true);
@@ -646,7 +646,6 @@ public class ClassController {
                 fileHandler.setFile(selectedFile);
                 diagram = fileHandler.parseClassDiagram();
                 for (UMLClass cl : diagram.getClassesList()) {
-                    //System.out.println("UMLClass: " + cl.getName());
                     // Creating GUI
                     ClassBox rectangle = new ClassBox(cl);
                     draggable(rectangle);
@@ -656,15 +655,13 @@ public class ClassController {
                     });
                     seznam.add(rectangle);
                     anchorPane.getChildren().add(rectangle);
-                    rectangle.toFront();
+                    //rectangle.toFront();
                     rectangle.relocate(cl.getX(), cl.getY());
-                    //x += 200;
-                    //y += 10;
                 }
                 for (Connection conn : fileHandler.parseConnections(seznam)){
                     anchorPane.getChildren().addAll(conn,conn.getArrowHead());
                     connections.add(conn);
-                    conn.toBack();
+                    //conn.toBack();
                 }
                 sequenceDiagrams = fileHandler.parseSequence(diagram);
             }
@@ -701,7 +698,12 @@ public class ClassController {
                 for (UMLAttribute attr : attributes) {
                     jsonAttributeArray.put(attr.getName());
                 }
+                JSONArray jsonOperationsArray = new JSONArray();
+                for (UMLOperation op : cl.getClassOperations()){
+                    jsonOperationsArray.put(op.getName());
+                }
                 tmp.put("attributes", jsonAttributeArray);
+                tmp.put("methods", jsonOperationsArray);
                 classes.put(tmp);
             }
             json.put("classes", classes);

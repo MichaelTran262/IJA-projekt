@@ -40,7 +40,7 @@ public class ClassBox extends StackPane {
 
     private ArrayList<Connection> connections = new ArrayList<Connection>();
 
-    private Rectangle rectangle = new Rectangle(200, 160, Color.WHITE);
+    private Rectangle rectangle;
 
     private Separator separator = new Separator();
 
@@ -53,7 +53,8 @@ public class ClassBox extends StackPane {
     public ClassBox(UMLClass cl) {
         super();
         this.cl = cl;
-        rectangle.setStyle("-fx-fill: #ffffff; -fx-stroke: #000000; -fx-border-color: #000000; -fx-stroke-width: 1;");
+        rectangle = new Rectangle(200, 160, Color.WHITE);
+        rectangle.setStyle("-fx-fill: #ffffff; -fx-stroke: green; -fx-border-color: #000000; -fx-stroke-width: 1;");
         this.setId(cl.getName());
         classTitle = new TextField(this.getId());
         classTitle.setAlignment(Pos.CENTER);
@@ -68,7 +69,6 @@ public class ClassBox extends StackPane {
         methodSeparator.setStyle("-fx-border-color: black; -fx-border-width: 0 0 1 0");
         setContextMenu(vbox);
         this.setContextMenu(this);
-        this.getChildren().add(rectangle);
         update();
     }
 
@@ -208,6 +208,10 @@ public class ClassBox extends StackPane {
         return this.cl.getAttributes();
     }
 
+    public List<UMLOperation> getClassOperations() {
+        return this.cl.getOperations();
+    }
+
     /**
      * Funkce aktualizující ClassBox po změně
      */
@@ -266,9 +270,12 @@ public class ClassBox extends StackPane {
             vbox.getChildren().add(mText);
         }
         this.getChildren().add(vbox);
-        if (vbox.getHeight() > rectangle.getHeight()) {
-            rectangle.setHeight(this.getHeight()+15);
-        }
+        int h = 3 + attributes.size() + methods.size();
+        rectangle.setHeight(h*27);
+        /*
+        if (this.getHeight() > rectangle.getHeight()) {
+            rectangle.setHeight(this.getHeight());
+        }*/
     }
 
     public String getClassName(){
