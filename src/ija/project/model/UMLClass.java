@@ -95,7 +95,6 @@ public class UMLClass extends Element {
             if (attr.getName().equals(name)) {
                 attributeList.remove(attr);
                 System.out.println("Attribute removed");
-                break;
             }
         }
     }
@@ -113,9 +112,25 @@ public class UMLClass extends Element {
 
     /**
      * Vrátí pozici v seznamu atributů
+     * @param attr Jméno atributu jehož pozice má být vrácena
+     * @return Index
      */
-    public int getAttrPosition(UMLAttribute attr) {
-        return attributeList.indexOf(attr);
+    public int getAttrPosition(String attr) {
+        for(int i = 0; i < attributeList.size(); i++)
+            if (attributeList.get(i).getName().equals(attr))
+                return i;
+        return -1;
+    }
+    /**
+     * Vrátí pozici v seznamu metod
+     * @param met Jméno metody jejíž pozice má být vrácena
+     * @return Index
+     */
+    public int getMetPosition(String met) {
+        for(int i = 0; i < operationList.size(); i++)
+            if (operationList.get(i).getName().equals(met))
+                return i;
+        return -1;
     }
 
     /**

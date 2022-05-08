@@ -38,9 +38,9 @@ public class Operation extends Line {
         type=typ;
         order=poradi;
         inconsistant = inconsistent;
-        setStartX(70+from*100);
+        setStartX(70+from*140);
         setStartY(135+order*60);
-        setEndX(this.getStartX()+(to-from)*100);
+        setEndX(this.getStartX()+(to-from)*140);
         setEndY(getStartY());
         name = new Text(jmeno);
         setUpDownText();

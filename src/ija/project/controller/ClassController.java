@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import ija.project.model.*;
 import javafx.collections.FXCollections;
@@ -73,6 +74,8 @@ public class ClassController {
     public Button showButton;
     public Button undoButton;
     public Button redoButton;
+    public Button nextButton;
+    public Button previousButton;
     private int currentPane = -1;
     private ArrayList<Integer> numberOfObjects = new ArrayList<Integer>();
     private ArrayList<List<UMLClass>> sequenceClasses = new ArrayList<>();
@@ -112,13 +115,138 @@ public class ClassController {
     Stack<Action> history = new Stack<>();
     Stack<Action> undoHistory = new Stack<>();
 
+
+    /**
+     * Funkce nastavující kontext menu pro metody
+     * @param tf TextField obsahující jméno metody, která je odstraněna při kliknutí na "Smazat metodu"
+     */
+    public void setMethodContextMenu(TextField tf, ClassBox edit) {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem menuItem1 = new MenuItem("Přidat metodu");
+        menuItem1.setOnAction(actionEvent -> {
+            execute(new AddMethod(edit));
+        });
+        MenuItem menuItem2 = new MenuItem("Smazat metodu");
+        menuItem2.setOnAction(actionEvent -> {
+            execute(new DeleteMethod(edit, tf.getText()));
+        });
+        contextMenu.getItems().addAll(menuItem1, menuItem2);
+        tf.setContextMenu(contextMenu);
+    }
+
+    /**
+     * Funkce nastavující kontext menu pro atributy
+     * @param tf TextField obsahující jméno atributu, který je odstraněn při kliknutí na "Smazat atribut"
+     */
+    public void setAttributeContextMenu(TextField tf, ClassBox edit){
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem menuItem1 = new MenuItem("Přidat atribut");
+        menuItem1.setOnAction(actionEvent -> {
+            execute(new AddAttribute(edit));
+        });
+        MenuItem menuItem2 = new MenuItem("Smazat atribut");
+        menuItem2.setOnAction(actionEvent -> {
+            execute(new DeleteAttribute(edit, tf.getText()));
+        });
+        contextMenu.getItems().addAll(menuItem1, menuItem2);
+        tf.setContextMenu(contextMenu);
+    }
+
+    /**
+     * Funkce přidává contextMenu dané GUI kompomenty.
+     * @param node komponenta, do které se přidá contextMenu
+     */
+    public void setContextMenu(ClassBox node){
+        node.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem menuItem1 = new MenuItem("Přidat atribut");
+            MenuItem menuItem2 = new MenuItem("Přidat metodu");
+            menuItem1.setOnAction(actionEvent -> {
+                execute(new AddAttribute(node));
+            });
+            menuItem2.setOnAction(actionEvent -> {
+                execute(new AddMethod(node));
+            });
+            contextMenu.getItems().add(menuItem1);
+            contextMenu.getItems().add(menuItem2);
+            node.setOnContextMenuRequested(contextEvent -> {
+                        contextMenu.show(node, contextEvent.getScreenX(), contextEvent.getScreenY());
+                    }
+            );
+        });
+    }
+    /**
+     * Třída reprezentující akci přidání atributu
+     * Implementuje rozhraní Action
+     * @author Lukáš Fuis xfuisl00
+     * @version 1.0
+     */
+    class AddAttribute implements Action{
+        ClassBox edit;
+
+        public AddAttribute(ClassBox edit) {
+            this.edit = edit;
+        }
+
+        @Override
+        public void run() {
+            edit.addClassAttribute();
+        }
+
+        @Override
+        public void undo() {
+            edit.removeLastAttribute();
+        }
+
+        @Override
+        public void redo() {
+            edit.addClassAttribute();
+        }
+    }
+
+    /**
+     * Třída reprezentující akci smazání atributu
+     * Implementuje rozhraní Action
+     * @author Lukáš Fuis xfuisl00
+     * @version 1.0
+     */
+    class DeleteAttribute implements Action{
+        ClassBox edit;
+        String name;
+        int index;
+        UMLAttribute attribute;
+
+        public DeleteAttribute(ClassBox edit, String name) {
+            this.name = name;
+            this.edit = edit;
+        }
+
+        @Override
+        public void run() {
+            index = edit.getUMLClass().getAttrPosition(name);
+            attribute = edit.getAttributeOnIndex(index);
+            edit.removeClassAttribute(name);
+        }
+
+        @Override
+        public void undo() {
+            edit.addAttributeIndex(index, attribute);
+        }
+
+        @Override
+        public void redo() {
+            index = edit.getUMLClass().getAttrPosition(name);
+            attribute = edit.getAttributeOnIndex(index);
+            edit.removeClassAttribute(name);
+        }
+    }
+
     /**
      * Třída reprezentující akci změny jména v diagramu
      * Implementuje rozhraní Action
      * @author Lukáš Fuis xfuisl00
      * @version 1.0
      */
-
     class EditName implements Action{
         String before;
         String after;
@@ -147,6 +275,74 @@ public class ClassController {
     }
 
     /**
+     * Třída reprezentující akci přidání metody
+     * Implementuje rozhraní Action
+     * @author Lukáš Fuis xfuisl00
+     * @version 1.0
+     */
+    class AddMethod implements Action{
+        ClassBox edit;
+
+        public AddMethod(ClassBox edit) {
+            this.edit = edit;
+        }
+
+        @Override
+        public void run() {
+            edit.addClassOperation();
+        }
+
+        @Override
+        public void undo() {
+            edit.removeLastOperation();
+        }
+
+        @Override
+        public void redo() {
+            edit.addClassOperation();
+        }
+    }
+
+    /**
+     * Třída reprezentující akci odstranění metody
+     * Implementuje rozhraní Action
+     * @author Lukáš Fuis xfuisl00
+     * @version 1.0
+     */
+    class DeleteMethod implements Action{
+
+        ClassBox edit;
+        String name;
+        int index;
+        UMLOperation metoda;
+
+        public DeleteMethod(ClassBox edit, String name) {
+            this.name = name;
+            this.edit = edit;
+        }
+
+        @Override
+        public void run() {
+            index = edit.getUMLClass().getMetPosition(name);
+            metoda = edit.getMethodOnIndex(index);
+            edit.removeClassOperation(name);
+        }
+
+        @Override
+        public void undo() {
+            edit.addMethodIndex(index, metoda);
+        }
+
+        @Override
+        public void redo() {
+            index = edit.getUMLClass().getMetPosition(name);
+            metoda = edit.getMethodOnIndex(index);
+            edit.removeClassOperation(name);
+        }
+    }
+
+
+    /**
      * Třída reprezentující akci přidání nové třídy
      * Implementuje rozhraní Action
      * @author Lukáš Fuis xfuisl00
@@ -158,7 +354,6 @@ public class ClassController {
         ArrayList<ClassBox> clsList;
 
         ClassBox add;
-
         public AddClass(AnchorPane root, ClassDiagram clsDiagram, ArrayList<ClassBox> clsList) {
             this.root = root;
             this.clsDiagram = clsDiagram;
@@ -174,9 +369,17 @@ public class ClassController {
             // Creating GUI
             add = new ClassBox(clsAdd);
             add.getClassTitle().textProperty().addListener((observable, oldValue, newValue) -> {
-                //Dej sem execute a undo
                 execute(new EditName(add,newValue));
             });
+            setContextMenu(add);
+            for (TextField tf:add.getAttributes()
+                 ) {
+                setAttributeContextMenu(tf, add);
+            }
+            for (TextField tf:add.getMethods()
+                 ) {
+                setMethodContextMenu(tf,add);
+            }
             draggable(add);
             connectable(add);
             add.toFront();
@@ -655,13 +858,13 @@ public class ClassController {
                     });
                     seznam.add(rectangle);
                     anchorPane.getChildren().add(rectangle);
-                    //rectangle.toFront();
+                    rectangle.toFront();
                     rectangle.relocate(cl.getX(), cl.getY());
                 }
                 for (Connection conn : fileHandler.parseConnections(seznam)){
                     anchorPane.getChildren().addAll(conn,conn.getArrowHead());
                     connections.add(conn);
-                    //conn.toBack();
+                    conn.toBack();
                 }
                 sequenceDiagrams = fileHandler.parseSequence(diagram);
             }
@@ -954,9 +1157,16 @@ public class ClassController {
             //System.out.println("sequenceDiagrams is empty " + sequenceDiagrams.isEmpty());
             sequenceDiagrams.add(new SequenceDiagram("name", diagram));
         }
+        System.out.println(sequenceDiagrams);
+        int smth;
+        if(currentPane != -1)
+            smth = currentPane;
+        else
+            smth = 0;
+        currentPane = 0;
+        sequencePanes.clear();
+        numberOfObjects.clear();
         for (SequenceDiagram diagram : sequenceDiagrams) {
-            sequencePanes.clear();
-            numberOfObjects.clear();
             int x = 50;
             int max = 0;
             int min = 1000;
@@ -970,12 +1180,11 @@ public class ClassController {
             //pane.getChildren().add(nameDiagram);
             List<UMLClass> classes = diagram.getClasses();
             sequenceClasses.add(classes);
-            currentPane = 0;
             List<Rectangle> rectangles = new ArrayList<>();
             int numberObjects = 0;
             for (UMLClass cl : classes) {
                 numberObjects++;
-                pane.getChildren().addAll(createObjects(cl.getName(),50+numberObjects*100));
+                pane.getChildren().addAll(createObjects(cl.getName(),50+numberObjects*140));
                 //System.out.println(cl.getName() + "number of objects: " + numberObjects);
                 try{
                     ArrayList<Integer> from = cl.getActiveFrom();
@@ -1014,7 +1223,7 @@ public class ClassController {
             pane.getChildren().addAll(drawActor());
             pane.setId(Integer.toString(i));
             //pravitko
-            final int width = 100;
+            final int width = 140;
             final int height = 60;
             Line horizontalRuler = new Line(10, 10, 1920, 10);
             Line verticalRuler = new Line(10, 10, 10, 1920);
@@ -1034,10 +1243,12 @@ public class ClassController {
             i++;
             currentPane++;
         }
-        currentPane = 0;
-        nameOfDiagram.setText("");
+        currentPane = smth;
+        System.out.println(currentPane);
+        nameOfDiagram.setText(sequenceDiagrams.get(currentPane).getName());
         sequenceAnchorPane.getChildren().clear();
         sequenceAnchorPane.getChildren().addAll(sequencePanes.get(currentPane).getChildrenUnmodifiable());
+        System.out.println("setnuto na pane = " + nameOfDiagram.getText());
         //showButton.setDisable(true);
     }
 
@@ -1046,21 +1257,24 @@ public class ClassController {
      * @author      Lukáš Fuis      xfuisl00
      */
     public void nextDiagram(){
+        System.out.println("Next diagram");
         List<Node> clone = new ArrayList<>();
         if(sequencePanes.size() == 1)
             return;
-        if(currentPane == sequencePanes.size()-1){
-            currentPane = 0;
-        }
-        else {
-            clone.addAll(sequenceAnchorPane.getChildren());
-            sequencePanes.get(currentPane).getChildren().clear();
-            sequencePanes.get(currentPane).getChildren().addAll(clone);
-            currentPane++;
-        }
+
+        clone.addAll(sequenceAnchorPane.getChildren());
+        sequencePanes.get(currentPane).getChildren().clear();
+        sequencePanes.get(currentPane).getChildren().addAll(clone);
+        currentPane++;
+
         sequenceAnchorPane.getChildren().clear();
         nameOfDiagram.setText(sequenceDiagrams.get(currentPane).getName());
+        System.out.println(currentPane + nameOfDiagram.getText());
         sequenceAnchorPane.getChildren().addAll(sequencePanes.get(currentPane).getChildrenUnmodifiable());
+        previousButton.setDisable(false);
+        if(currentPane == sequencePanes.size()-1){
+            nextButton.setDisable(true);
+        }
     }
 
     /**
@@ -1068,21 +1282,24 @@ public class ClassController {
      * @author      Lukáš Fuis      xfuisl00
      */
     public void previousDiagram(){
+        System.out.println("Previous");
         List<Node> clone = new ArrayList<>();
         if(sequencePanes.size() == 1)
             return;
-        if(currentPane == 0){
-            currentPane = sequencePanes.size()-1;
-        }
-        else {
-            clone.addAll(sequenceAnchorPane.getChildren());
-            sequencePanes.get(currentPane).getChildren().clear();
-            sequencePanes.get(currentPane).getChildren().addAll(clone);
-            currentPane--;
-        }
+
+        clone.addAll(sequenceAnchorPane.getChildren());
+        sequencePanes.get(currentPane).getChildren().clear();
+        sequencePanes.get(currentPane).getChildren().addAll(clone);
+        currentPane--;
+
         sequenceAnchorPane.getChildren().clear();
         nameOfDiagram.setText(sequenceDiagrams.get(currentPane).getName());
+        System.out.println(currentPane + nameOfDiagram.getText());
         sequenceAnchorPane.getChildren().addAll(sequencePanes.get(currentPane).getChildrenUnmodifiable());
+        nextButton.setDisable(false);
+        if(currentPane == 0){
+            previousButton.setDisable(true);
+        }
     }
 
 
@@ -1155,14 +1372,14 @@ public class ClassController {
         int Ys = 130;
         int Ye = Ys+(max-1)*60+20;
         Line line = new Line(X,Ys,X,Ye);
-        X += 100;
+        X += 140;
         line.toBack();
         list.add(line);
         for(int i = 0;i<count;i++){
             line = new Line(X,Ys,X,Ye);
             line.toBack();
             list.add(line);
-            X += 100;
+            X += 140;
         }
         return list;
     }
@@ -1177,7 +1394,7 @@ public class ClassController {
      * @return Vrací instanci třídy Rectangle znázorňující aktivitu
      */
     public Rectangle createActivity(int poradi, int from, int to){
-        int X = 65+poradi*100;
+        int X = 65+poradi*140;
         int Ye = 135+(from-1)*60;
         Rectangle activity = new Rectangle();
         activity.setY(Ye);
@@ -1209,11 +1426,16 @@ public class ClassController {
     public boolean isInconsistentMethod(String className, String methodName, int type){
         if(type == 2)
             return  false;
+        if(Pattern.matches("<<create>>.*", methodName))
+            return false;
         UMLClass cl = sequenceDiagrams.get(currentPane).getClassByName(className);
-        for (UMLAttribute attr:cl.getAttributes()) {
-            if(methodName.equals(attr.getName()))
+        //System.out.println("Current pane = " + currentPane);
+        for (UMLOperation met:cl.getOperations()) {
+            if(methodName.equals(met.getName()))
                 return false;
         }
         return true;
     }
+
+
 }

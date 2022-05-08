@@ -173,23 +173,23 @@ public class Connection extends Line {
     public void createArrowHead(String type) {
         arrowType = type;
         this.endXProperty().addListener((observableValue, number, t1) -> {
-            System.out.println("If1 " + this.start.getRectangle().getHeight() + ", " + this.start.getRectangle().getWidth());
-            System.out.println("Connection is moving, X: " + number + "new X: " + t1);
+            //System.out.println("If1 " + this.start.getRectangle().getHeight() + ", " + this.start.getRectangle().getWidth());
+            //System.out.println("Connection is moving, X: " + number + "new X: " + t1);
             drawArrow(this.getStartX(), this.getStartY(), this.start.getRectangle().getHeight(), this.start.getRectangle().getWidth());
         });
         this.endYProperty().addListener((observableValue, number, t1) -> {
-            System.out.println("If2 " + this.start.getRectangle().getHeight() + ", " + this.start.getRectangle().getWidth());
-            System.out.println("Connection is moving, old Y: " + number + "new Y: " + t1);
+            //System.out.println("If2 " + this.start.getRectangle().getHeight() + ", " + this.start.getRectangle().getWidth());
+            //System.out.println("Connection is moving, old Y: " + number + "new Y: " + t1);
             drawArrow(this.getStartX(), this.getStartY(), this.start.getRectangle().getHeight(), this.start.getRectangle().getWidth());
         });
         this.startXProperty().addListener((observableValue, number, t1) -> {
-            System.out.println("If3 " + this.start.getRectangle().getHeight() + ", " + this.start.getRectangle().getWidth());
-            System.out.println("Connection is moving, X: " + number + "new X: " + t1);
+      //      System.out.println("If3 " + this.start.getRectangle().getHeight() + ", " + this.start.getRectangle().getWidth());
+       //     System.out.println("Connection is moving, X: " + number + "new X: " + t1);
             drawArrow(this.getStartX(), this.getStartY(), this.start.getRectangle().getHeight(), this.start.getRectangle().getWidth());
         });
         this.startYProperty().addListener((observableValue, number, t1) -> {
-            System.out.println("If4 " + this.start.getRectangle().getHeight() + ", " + this.start.getRectangle().getWidth());
-            System.out.println("Connection is moving, old Y: " + number + "new Y: " + t1);
+      //      System.out.println("If4 " + this.start.getRectangle().getHeight() + ", " + this.start.getRectangle().getWidth());
+        //    System.out.println("Connection is moving, old Y: " + number + "new Y: " + t1);
             drawArrow(this.getStartX(), this.getStartY(), this.start.getRectangle().getHeight(), this.start.getRectangle().getWidth());
         });
     }

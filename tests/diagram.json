@@ -86,5 +86,138 @@
             "end": "ClassDiagram",
             "type": "dependency"
         }
+    ],
+    "sequence": [
+        {
+            "name": "Sequence Diagram",
+            "objects": [
+                {
+                    "name": "ClassDiagram",
+                    "start": [1],
+                    "end": [3]
+                },
+                {
+                    "name": "UMLClass",
+                    "start": [7],
+                    "end": [8]
+                },
+                {
+                    "name": "UMLAttribute",
+                    "start": [9],
+                    "end": [10]
+                }
+            ],
+            "operations": [
+                {
+                    "from": "actor",
+                    "to": "ClassDiagram",
+                    "type": 1,
+                    "name": "createClass()"
+                },
+                {
+                    "from": "ClassDiagram",
+                    "to": "UMLClass",
+                    "type": 1,
+                    "name": "<<create>>(\"c1\")"
+                },
+                {
+                    "from": "ClassDiagram",
+                    "to": "actor",
+                    "type": 2,
+                    "name": "c1"
+                },
+                {
+                    "from": "actor",
+                    "to": "ClassDiagram",
+                    "type": 1,
+                    "name": "classifierForName()"
+                },
+                {
+                    "from": "ClassDiagram",
+                    "to": "actor",
+                    "type": 2,
+                    "name": "cInt"
+                },
+                {
+                    "from": "actor",
+                    "to": "UMLAttribute",
+                    "type": 1,
+                    "name": "<<create>>(\"a1\",cInt)"
+                },
+                {
+                    "from": "actor",
+                    "to": "UMLClass",
+                    "type": 1,
+                    "name": "addAttribute()"
+                },
+                {
+                    "from": "UMLClass",
+                    "to": "actor",
+                    "type": 2,
+                    "name": "true"
+                },
+                {
+                    "from": "actor",
+                    "to": "UMLAttribute",
+                    "type": 1,
+                    "name": "isAbstract()"
+                },
+                {
+                    "from": "UMLAttribute",
+                    "to": "actor",
+                    "type": 2,
+                    "name": "false"
+                }
+            ]
+        },
+        {
+            "name": "Diagram1",
+            "objects": [
+                {
+                    "name": "class01",
+                    "start": [
+                        1
+                    ],
+                    "end": [
+                        4
+                    ]
+                },
+                {
+                    "name": "class02",
+                    "start": [
+                        2
+                    ],
+                    "end": [
+                        3
+                    ]
+                }
+            ],
+            "operations": [
+                {
+                    "from": "actor",
+                    "to": "class01",
+                    "type": 1,
+                    "name": "Send message"
+                },
+                {
+                    "from": "class01",
+                    "to": "class02",
+                    "type": 1,
+                    "name": "method()"
+                },
+                {
+                    "from": "class02",
+                    "to": "class01",
+                    "type": 2,
+                    "name": "return"
+                },
+                {
+                    "from": "class01",
+                    "to": "actor",
+                    "type": 2,
+                    "name": "response"
+                }
+            ]
+        }
     ]
 }

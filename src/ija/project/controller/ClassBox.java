@@ -46,6 +46,18 @@ public class ClassBox extends StackPane {
 
     private Separator methodSeparator = new Separator();
 
+    public VBox getVbox() {
+        return vbox;
+    }
+
+    public Separator getMethodSeparator() {
+        return methodSeparator;
+    }
+
+    public ArrayList<TextField> getMethods() {
+        return methods;
+    }
+
     /**
      * Konstruktor třidy ClassBox, nastavuje vlastnosti GUI komponentů
      * @param cl Třída UML, která Classbox reprezentuje
@@ -122,14 +134,16 @@ public class ClassBox extends StackPane {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem menuItem1 = new MenuItem("Přidat atribut");
         menuItem1.setOnAction(actionEvent -> {
-            addClassAttribute();
         });
         MenuItem menuItem2 = new MenuItem("Smazat atribut");
         menuItem2.setOnAction(actionEvent -> {
-            removeClassAttribute(tf.getText());
         });
         contextMenu.getItems().addAll(menuItem1, menuItem2);
         tf.setContextMenu(contextMenu);
+    }
+
+    public ArrayList<TextField> getAttributes() {
+        return attributes;
     }
 
     /**
@@ -298,4 +312,58 @@ public class ClassBox extends StackPane {
         cl.setName(name);
         classTitle.setText(name);
     }
+
+    /**
+     * Funkce mazající poslední přidaný atribut
+     */
+    public void removeLastAttribute(){
+        cl.getAttributes().remove(cl.getAttributes().size()-1);
+        update();
+    }
+
+    /**
+     * Funkce mazající poslední přidanou metodu
+     */
+    public void removeLastOperation(){
+        cl.getOperations().remove(cl.getOperations().size()-1);
+        update();
+    }
+
+    /**
+     * Funkce přidávající atribut na zadaný index
+     * @param index Index
+     * @param add Atribut k přidání
+     */
+    public void addAttributeIndex(int index, UMLAttribute add){
+        cl.getAttributes().add(index, add);
+        update();
+    }
+
+    /**
+     * Funkce vracející atribut na indexu
+     * @param index Index
+     * @return UMLAttribute
+     */
+    public UMLAttribute getAttributeOnIndex(int index){
+        return cl.getAttributes().get(index);
+    }
+    /**
+     * Funkce přidávající metodu na zadaný index
+     * @param index Index
+     * @param add Metoda k přidání
+     */
+    public void addMethodIndex(int index, UMLOperation add){
+        cl.getOperations().add(index, add);
+        update();
+    }
+
+    /**
+     * Funkce vracející metodu na indexu
+     * @param index Index
+     * @return UMLOperation
+     */
+    public UMLOperation getMethodOnIndex(int index){
+        return cl.getOperations().get(index);
+    }
+
 }

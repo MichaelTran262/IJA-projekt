@@ -24,8 +24,8 @@
         <Text fx:id="coordinatesText" layoutX="71.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="252.13000106811523" />
         <Text fx:id="boxCoordinates" layoutX="562.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="252.13000106811523" />
         <Button fx:id="sequenceButton" layoutX="19.0" layoutY="466.0" mnemonicParsing="false" onAction="#switchToClass" text="Switch" textAlignment="CENTER" />
-      <Button layoutX="24.0" layoutY="364.0" mnemonicParsing="false" onAction="#nextDiagram" text="Next" />
-      <Button layoutX="25.0" layoutY="397.0" mnemonicParsing="false" onAction="#previousDiagram" text="Prev" />
+      <Button fx:id="nextButton" layoutX="24.0" layoutY="364.0" mnemonicParsing="false" onAction="#nextDiagram" text="Next" />
+      <Button fx:id="previousButton" layoutX="25.0" layoutY="397.0" mnemonicParsing="false" onAction="#previousDiagram" text="Prev" />
       <Button fx:id="showButton" layoutX="20.0" layoutY="262.0" mnemonicParsing="false" onAction="#setSequencePanes" text="Refresh" />
       <Button fx:id="addActivityButton" layoutX="15.0" layoutY="158.0" mnemonicParsing="false" onAction="#sequenceAddActivity" prefHeight="37.0" prefWidth="75.0" text="+Aktivita" />
     </children>

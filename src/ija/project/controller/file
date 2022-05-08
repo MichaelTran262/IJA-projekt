@@ -1,0 +1,62 @@
+    /**
+     * Funkce aktualizující ClassBox po změně
+     */
+    public void update(ClassBox update){
+        update.getAttributes().clear();
+        update.getVbox().getChildren().clear();
+        update.getChildren().clear();
+        update.getChildren().add(update.getRectangle());
+        for ( UMLAttribute attr : update.getUMLClass().getAttributes()) {
+            TextField attrText = new TextField(attr.toString());
+            attrText.setMaxWidth(update.getRectangle().getWidth() - 20);
+            attrText.textProperty().addListener((observableValue, oldValue, newValue) -> {
+                attr.setName(newValue);
+                if(!attr.hasModifier()){
+                    attrText.setStyle("-fx-text-inner-color: red");
+                    Tooltip tooltip = new Tooltip("Chybí modifikátor přístupu");
+                    attrText.setTooltip(tooltip);
+                } else {
+                    attrText.setStyle("-fx-text-inner-color: black");
+                    attrText.setTooltip(null);
+                }
+                //System.out.println("textfield changed from " + oldValue + " to " + attr.getName());
+            });
+            update.getAttributes().add(attrText);
+            attrText.setId("Textfield " + 1+update.getAttributes().size());
+            setAttributeContextMenu(attrText, update);
+        }
+        update.getVbox().getChildren().addAll(update.getClassTitle(), update.getMethodSeparator());
+        for (TextField attr : update.getAttributes()) {
+            update.getVbox().getChildren().add(attr);
+        }
+        update.getMethodSeparator().setMaxWidth(update.getRectangle().getWidth() - 2);
+        update.getVbox().getChildren().add(update.getMethodSeparator());
+        // process Operations
+        update.getMethods().clear();
+        for (UMLOperation op : update.getUMLClass().getOperations()) {
+            TextField methodText = new TextField(op.getName());
+            methodText.setMaxWidth(update.getRectangle().getWidth() - 20);
+            methodText.textProperty().addListener((observableValue, oldValue, newValue) -> {
+                op.setName(newValue);
+                if(!op.hasModifier()){
+                    methodText.setStyle("-fx-text-inner-color: red");
+                    Tooltip tooltip = new Tooltip("Chybí modifikátor přístupu");
+                    methodText.setTooltip(tooltip);
+                } else {
+                    methodText.setStyle("-fx-text-inner-color: black");
+                    methodText.setTooltip(null);
+                }
+                //System.out.println("textfield changed from " + oldValue + " to " + attr.getName());
+            });
+            update.getMethods().add(methodText);
+            methodText.setId("methodTextField " + 1 + update.getMethods().size());
+            setMethodContextMenu(methodText,update);
+        }
+        for (TextField mText : update.getMethods()) {
+            update.getVbox().getChildren().add(mText);
+        }
+        update.getChildren().add(update.getVbox());
+        if (update.getVbox().getHeight() > update.getRectangle().getHeight()) {
+            update.getRectangle().setHeight(update.getHeight()+15);
+        }
+    }

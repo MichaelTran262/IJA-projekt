@@ -18,8 +18,8 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem fx:id="loadFileItem" mnemonicParsing="false" onAction="#loadFile" text="Load" />
-                  <MenuItem fx:id="saveFileItem" mnemonicParsing="false" onAction="#saveToFile" text="Save" />
+                  <MenuItem fx:id="loadFileItem" mnemonicParsing="false" onAction="#loadFile" text="Load from file" />
+                  <MenuItem fx:id="saveFileItem" mnemonicParsing="false" onAction="#saveToFile" text="Save to file" />
                   <MenuItem mnemonicParsing="false" text="Close" />
             </items>
           </Menu>
